@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arcé — Forma Low Chalk White</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black: #0e0e0e;
+  --white: #fafafa;
+  --gray: #888;
+  --light: #f2f2f0;
+  --accent: #d4a853;
+  --border: rgba(0,0,0,0.1);
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--black); min-height: 100vh; }
+
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 48px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--white); z-index: 100;
+}
+.logo { font-family: 'DM Serif Display', serif; font-size: 22px; letter-spacing: 0.08em; }
+.nav-links { display: flex; gap: 32px; }
+.nav-links a { font-size: 12px; letter-spacing: 0.1em; text-decoration: none; color: var(--gray); text-transform: uppercase; transition: color .2s; }
+.nav-links a:hover { color: var(--black); }
+.nav-icons { display: flex; gap: 20px; }
+.nav-icons button { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--gray); transition: color .2s; }
+.nav-icons button:hover { color: var(--black); }
+
+.product-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 70px); }
+
+.img-panel {
+  background: #111;
+  display: flex; flex-direction: column;
+  position: sticky; top: 70px; height: calc(100vh - 70px);
+}
+.img-main {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.new-badge {
+  position: absolute; top: 28px; left: 28px;
+  background: var(--white); color: var(--black);
+  font-size: 9px; font-weight: 500; letter-spacing: 0.15em;
+  padding: 5px 12px; text-transform: uppercase;
+}
+.img-main svg { opacity: 0.94; transition: transform .6s ease; }
+.img-main:hover svg { transform: scale(1.03) rotate(-1deg); }
+.thumb-strip {
+  display: flex; gap: 10px; padding: 16px 24px;
+  border-top: 1px solid #1e1e1e; background: #0d0d0d;
+}
+.thumb {
+  width: 52px; height: 52px; border-radius: 6px;
+  background: #1a1a1a; border: 1px solid #2a2a2a;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #555; transition: border-color .2s;
+}
+.thumb.active, .thumb:hover { border-color: rgba(255,255,255,0.4); }
+.thumb span { font-size: 10px; color: #555; }
+
+.info-panel { padding: 52px 56px; overflow-y: auto; }
+.brand-line { font-size: 10px; letter-spacing: 0.18em; color: var(--gray); text-transform: uppercase; margin-bottom: 12px; }
+.product-name { font-family: 'DM Serif Display', serif; font-size: 42px; line-height: 1.05; margin-bottom: 6px; }
+.product-sub { font-size: 13px; color: var(--gray); margin-bottom: 28px; }
+
+.rating-row { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.stars { color: #c9933a; font-size: 14px; letter-spacing: 2px; }
+.rating-num { font-size: 14px; font-weight: 500; }
+.rating-ct { font-size: 13px; color: var(--gray); }
+
+.price-row { display: flex; align-items: baseline; gap: 14px; margin-bottom: 32px; }
+.price-main { font-size: 32px; font-weight: 300; }
+.price-old { font-size: 16px; color: var(--gray); text-decoration: line-through; }
+.price-tag { font-size: 11px; font-weight: 500; background: #eef7e8; color: #3a6a1a; padding: 4px 10px; border-radius: 2px; letter-spacing: 0.04em; }
+
+.section-head { font-size: 10px; letter-spacing: 0.14em; color: var(--gray); text-transform: uppercase; margin-bottom: 12px; }
+.colors { display: flex; gap: 10px; margin-bottom: 32px; }
+.color-swatch {
+  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; outline: 2px solid transparent;
+  transition: outline .2s;
+}
+.color-swatch.active { outline: 2px solid var(--black); outline-offset: 3px; }
+
+.sizes { margin-bottom: 36px; }
+.size-note { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.size-link { font-size: 12px; color: var(--gray); text-decoration: underline; cursor: pointer; }
+.size-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.sz {
+  padding: 11px 4px; border: 1px solid var(--border); border-radius: 4px;
+  font-size: 13px; text-align: center; cursor: pointer;
+  color: var(--gray); transition: all .15s; user-select: none;
+}
+.sz:hover { border-color: var(--black); color: var(--black); }
+.sz.active { background: var(--black); color: var(--white); border-color: var(--black); }
+.sz.sold { opacity: 0.3; pointer-events: none; position: relative; text-decoration: line-through; }
+
+.cta { display: flex; gap: 10px; margin-bottom: 36px; }
+.btn-add {
+  flex: 1; padding: 16px; background: var(--black); color: var(--white);
+  border: none; font-family: 'DM Sans', sans-serif; font-size: 13px;
+  font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; transition: opacity .2s;
+}
+.btn-add:hover { opacity: 0.85; }
+.btn-wish {
+  width: 52px; height: 52px; border: 1px solid var(--border); background: none;
+  cursor: pointer; font-size: 20px; color: var(--gray); transition: all .2s;
+  border-radius: 4px;
+}
+.btn-wish:hover { border-color: var(--black); color: var(--black); }
+
+.features { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 32px; border-top: 1px solid var(--border); }
+.feat { display: flex; flex-direction: column; gap: 4px; }
+.feat-icon { font-size: 18px; color: var(--gray); margin-bottom: 2px; }
+.feat-title { font-size: 13px; font-weight: 500; }
+.feat-desc { font-size: 12px; color: var(--gray); line-height: 1.4; }
+
+@media (max-width: 900px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .product-grid { grid-template-columns: 1fr; }
+  .img-panel { position: static; height: 60vw; min-height: 300px; }
+  .info-panel { padding: 32px 24px; }
+  .product-name { font-size: 30px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">ARCÉ</span>
+  <div class="nav-links">
+    <a href="#">New arrivals</a>
+    <a href="#">Men</a>
+    <a href="#">Women</a>
+    <a href="#">Sale</a>
+  </div>
+  <div class="nav-icons">
+    <button>🔍</button>
+    <button>♡</button>
+    <button>🛍</button>
+  </div>
+</nav>
+
+<div class="product-grid">
+  <div class="img-panel">
+    <div class="img-main">
+      <span class="new-badge">New Drop</span>
+      <svg width="320" height="240" viewBox="0 0 320 240" fill="none">
+        <ellipse cx="160" cy="204" rx="122" ry="14" fill="#1a1a1a"/>
+        <path d="M50 175 C48 157 53 138 68 126 L110 98 C122 89 140 84 160 86 L226 91 C250 94 268 107 274 124 L278 143 C280 155 275 167 265 173 L218 187 C200 195 180 199 158 199 L90 196 C70 193 53 186 50 175Z" fill="#f0f0f0"/>
+        <path d="M68 126 L110 98 C122 89 140 84 160 86 L226 91" stroke="#d8d8d8" stroke-width="1" fill="none"/>
+        <path d="M50 175 C62 179 80 183 98 185 L218 187" stroke="#c8c8c8" stroke-width="0.5" fill="none"/>
+        <path d="M116 98 C122 109 128 132 124 160 L122 197" stroke="#ddd" stroke-width="1" fill="none"/>
+        <path d="M158 87 C161 102 162 128 158 164 L156 198" stroke="#ddd" stroke-width="1" fill="none"/>
+        <path d="M200 91 C198 106 194 134 190 165 L188 197" stroke="#ddd" stroke-width="1" fill="none"/>
+        <path d="M50 175 C44 171 40 163 42 153 L46 135 C51 118 60 109 68 126Z" fill="#e0e0e0"/>
+        <path d="M265 173 L273 179 C282 184 290 181 290 172 L286 153 C283 141 278 141 274 141" stroke="#d8d8d8" stroke-width="1.5" fill="#e8e8e8"/>
+        <rect x="68" y="179" width="170" height="22" rx="8" fill="#d8d8d8"/>
+        <rect x="68" y="195" width="170" height="8" rx="4" fill="#c8c8c8"/>
+      </svg>
+    </div>
+    <div class="thumb-strip">
+      <div class="thumb active">👟</div>
+      <div class="thumb">↻</div>
+      <div class="thumb">⊕</div>
+    </div>
+  </div>
+
+  <div class="info-panel">
+    <p class="brand-line">Arcé / Essentials Collection</p>
+    <h1 class="product-name">Forma Low<br>— Chalk White</h1>
+    <p class="product-sub">Full-grain leather · Recycled rubber sole</p>
+
+    <div class="rating-row">
+      <span class="stars">★★★★★</span>
+      <span class="rating-num">4.9</span>
+      <span class="rating-ct">· 218 reviews</span>
+    </div>
+
+    <div class="price-row">
+      <span class="price-main">$189</span>
+      <span class="price-old">$240</span>
+      <span class="price-tag">Save $51</span>
+    </div>
+
+    <div class="section-head">Colour</div>
+    <div class="colors">
+      <div class="color-swatch active" style="background:#f0f0f0; border-color:#ccc;" data-color="white" title="Chalk White"></div>
+      <div class="color-swatch" style="background:#1a1a1a;" data-color="black" title="Midnight"></div>
+      <div class="color-swatch" style="background:#c8a882;" data-color="tan" title="Desert Sand"></div>
+      <div class="color-swatch" style="background:#8fa8c2;" data-color="blue" title="Slate Blue"></div>
+    </div>
+
+    <div class="sizes">
+      <div class="size-note">
+        <span class="section-head" style="margin:0">Size (EU)</span>
+        <span class="size-link">Size guide</span>
+      </div>
+      <div class="size-grid">
+        <div class="sz sold">38</div>
+        <div class="sz">39</div>
+        <div class="sz active">40</div>
+        <div class="sz">41</div>
+        <div class="sz">42</div>
+        <div class="sz">43</div>
+        <div class="sz sold">44</div>
+        <div class="sz">45</div>
+        <div class="sz">46</div>
+        <div class="sz sold">47</div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <button class="btn-add">Add to cart</button>
+      <button class="btn-wish">♡</button>
+    </div>
+
+    <div class="features">
+      <div class="feat">
+        <span class="feat-icon">🚚</span>
+        <span class="feat-title">Free shipping</span>
+        <span class="feat-desc">On orders over $120</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">↩</span>
+        <span class="feat-title">60-day returns</span>
+        <span class="feat-desc">No questions asked</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🌿</span>
+        <span class="feat-title">Sustainable</span>
+        <span class="feat-desc">Recycled materials</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🛡</span>
+        <span class="feat-title">2-year warranty</span>
+        <span class="feat-desc">Craftsmanship guarantee</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.sz:not(.sold)').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.sz').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  });
+});
+document.querySelectorAll('.color-swatch').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  });
+});
+document.querySelector('.btn-wish').addEventListener('click', function() {
+  this.textContent = this.textContent === '♡' ? '♥' : '♡';
+  this.style.color = this.textContent === '♥' ? '#e53' : '';
+});
+</script>
+</body>
+</html>

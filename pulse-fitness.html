@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse — Fitness Tracking App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: #080808;
+  color: #f0f0f0;
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+}
+header {
+  width: 100%; max-width: 960px;
+  padding: 40px 32px 20px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.brand { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; letter-spacing: 2px; color: #f97316; }
+.tagline { font-size: 11px; color: #444; letter-spacing: 0.1em; margin-top: 2px; }
+.author { font-size: 12px; color: #555; text-align: right; }
+.author strong { color: #888; display: block; font-size: 13px; }
+
+.screens-wrap {
+  display: flex; gap: 36px; padding: 24px 32px 40px;
+  flex-wrap: wrap; justify-content: center;
+  width: 100%; max-width: 960px;
+}
+.screen-col { display: flex; flex-direction: column; }
+.slabel { font-size: 9px; letter-spacing: 0.14em; color: #333; text-align: center; margin-bottom: 10px; text-transform: uppercase; }
+
+.phone {
+  width: 240px; border-radius: 40px;
+  border: 7px solid #141414; background: #0a0a0a;
+  outline: 1px solid #242424; overflow: hidden;
+}
+.ph { height: 520px; display: flex; flex-direction: column; }
+.st { display: flex; justify-content: space-between; padding: 10px 18px 5px; }
+.st span { font-size: 9px; color: #444; }
+.scr { flex: 1; padding: 6px 14px 12px; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Summary */
+.badge-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #141008; border: 0.5px solid #2a1f08;
+  border-radius: 20px; padding: 4px 10px; margin-bottom: 10px; width: fit-content;
+}
+.badge-pill span { font-size: 8px; color: #f97316; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.wt { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 600; color: #f0f0f0; line-height: 1.1; }
+.ws { font-size: 9px; color: #444; margin-top: 2px; margin-bottom: 14px; }
+
+.ring-area { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.ring-wrap { position: relative; width: 76px; height: 76px; flex-shrink: 0; }
+.ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+.ring-pct { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 600; color: #f0f0f0; }
+.ring-lbl { font-size: 8px; color: #444; }
+
+.stats { display: flex; flex-direction: column; gap: 7px; flex: 1; }
+.stat-row { display: flex; align-items: center; gap: 7px; }
+.stat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.stat-name { font-size: 9px; color: #555; width: 44px; }
+.stat-track { flex: 1; height: 4px; background: #181818; border-radius: 2px; overflow: hidden; }
+.stat-fill { height: 100%; border-radius: 2px; }
+.stat-val { font-size: 9px; color: #999; min-width: 28px; text-align: right; font-weight: 500; }
+
+.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 12px; }
+.metric { background: #101010; border: 0.5px solid #1a1a1a; border-radius: 12px; padding: 9px 10px; }
+.m-icon { font-size: 14px; margin-bottom: 3px; }
+.m-val { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 600; color: #f0f0f0; }
+.m-unit { font-size: 9px; color: #444; }
+.m-label { font-size: 8px; color: #444; margin-top: 1px; }
+
+.chart-area { margin-bottom: 10px; }
+.chart-lbl { font-size: 8px; color: #333; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.bars { display: flex; align-items: flex-end; gap: 4px; height: 42px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 3px; }
+.bar-d { font-size: 7px; color: #333; }
+
+.btns { display: flex; gap: 8px; margin-top: auto; }
+.btn-s { flex: 1; padding: 10px; background: #141414; border: 0.5px solid #222; border-radius: 12px; font-family: 'Space Grotesk',sans-serif; font-size: 10px; color: #666; cursor: pointer; }
+.btn-p { flex: 1; padding: 10px; background: #f97316; border: none; border-radius: 12px; font-family: 'Space Grotesk',sans-serif; font-size: 10px; font-weight: 600; color: #fff; cursor: pointer; }
+
+/* Log */
+.log-hd { margin-bottom: 12px; }
+.log-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 600; color: #f0f0f0; }
+.log-sub { font-size: 9px; color: #444; margin-top: 2px; }
+
+.ex-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+.ex { display: flex; align-items: center; gap: 8px; background: #0f0f0f; border: 0.5px solid #191919; border-radius: 12px; padding: 9px 10px; }
+.ex-num { font-size: 9px; color: #333; width: 14px; flex-shrink: 0; font-family: 'Barlow Condensed', sans-serif; }
+.ex-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.ex-info { flex: 1; }
+.ex-name { font-size: 11px; font-weight: 500; color: #ddd; display: flex; align-items: center; gap: 5px; }
+.pr { font-size: 7px; background: #2d1400; color: #f97316; padding: 2px 5px; border-radius: 3px; font-weight: 600; letter-spacing: 0.06em; }
+.ex-detail { font-size: 8px; color: #444; margin-top: 2px; }
+.check { font-size: 14px; }
+
+.bottom-nav { display: flex; justify-content: space-around; padding: 8px 0 4px; border-top: 0.5px solid #141414; margin-top: auto; }
+.bn { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; color: #282828; font-size: 16px; }
+.bn.on { color: #f97316; }
+.bn span { font-size: 7px; }
+
+footer { padding: 20px 32px 40px; font-size: 11px; color: #222; text-align: center; }
+footer strong { color: #3a3a3a; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">PULSE</div>
+    <div class="tagline">Fitness Tracking — UI Concept</div>
+  </div>
+  <div class="author">Portfolio project by<strong>Mert Şafak Eyidoğan</strong></div>
+</header>
+
+<div class="screens-wrap">
+
+  <!-- Summary -->
+  <div class="screen-col">
+    <div class="slabel">Workout summary</div>
+    <div class="phone">
+      <div class="ph">
+        <div class="st"><span>9:41</span><span>⚡</span></div>
+        <div class="scr">
+          <div class="badge-pill"><span>🔥 Workout complete</span></div>
+          <p class="wt">Upper body<br>strength</p>
+          <p class="ws">Today · 48 min · 6 exercises</p>
+
+          <div class="ring-area">
+            <div class="ring-wrap">
+              <svg width="76" height="76" viewBox="0 0 76 76" style="transform:rotate(-90deg)">
+                <circle cx="38" cy="38" r="30" stroke="#181818" stroke-width="7" fill="none"/>
+                <circle cx="38" cy="38" r="30" stroke="#f97316" stroke-width="7" fill="none"
+                  stroke-dasharray="188.5" stroke-dashoffset="37.7" stroke-linecap="round"/>
+              </svg>
+              <div class="ring-center"><p class="ring-pct">80%</p><p class="ring-lbl">goal</p></div>
+            </div>
+            <div class="stats">
+              <div class="stat-row">
+                <div class="stat-dot" style="background:#f97316;"></div>
+                <span class="stat-name">Calories</span>
+                <div class="stat-track"><div class="stat-fill" style="width:82%;background:#f97316;"></div></div>
+                <span class="stat-val">412</span>
+              </div>
+              <div class="stat-row">
+                <div class="stat-dot" style="background:#818cf8;"></div>
+                <span class="stat-name">Volume</span>
+                <div class="stat-track"><div class="stat-fill" style="width:70%;background:#818cf8;"></div></div>
+                <span class="stat-val">8.2k</span>
+              </div>
+              <div class="stat-row">
+                <div class="stat-dot" style="background:#34d399;"></div>
+                <span class="stat-name">Duration</span>
+                <div class="stat-track"><div class="stat-fill" style="width:60%;background:#34d399;"></div></div>
+                <span class="stat-val">48m</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="metrics">
+            <div class="metric"><div class="m-icon" style="color:#f97316;">🔥</div><p class="m-val">412 <span class="m-unit">kcal</span></p><p class="m-label">Calories</p></div>
+            <div class="metric"><div class="m-icon" style="color:#818cf8;">🏋</div><p class="m-val">8.2k <span class="m-unit">kg</span></p><p class="m-label">Volume</p></div>
+            <div class="metric"><div class="m-icon" style="color:#34d399;">🔁</div><p class="m-val">142 <span class="m-unit">reps</span></p><p class="m-label">Total reps</p></div>
+            <div class="metric"><div class="m-icon" style="color:#fbbf24;">❤</div><p class="m-val">141 <span class="m-unit">bpm</span></p><p class="m-label">Peak HR</p></div>
+          </div>
+
+          <div class="chart-area">
+            <p class="chart-lbl">Weekly volume (kg)</p>
+            <div class="bars">
+              <div class="bar-col"><div class="bar" style="height:22px;background:#1a1a1a;"></div><span class="bar-d">M</span></div>
+              <div class="bar-col"><div class="bar" style="height:34px;background:#222;"></div><span class="bar-d">T</span></div>
+              <div class="bar-col"><div class="bar" style="height:16px;background:#1a1a1a;"></div><span class="bar-d">W</span></div>
+              <div class="bar-col"><div class="bar" style="height:28px;background:#222;"></div><span class="bar-d">T</span></div>
+              <div class="bar-col"><div class="bar" style="height:12px;background:#1a1a1a;"></div><span class="bar-d">F</span></div>
+              <div class="bar-col"><div class="bar" style="height:40px;background:#f97316;"></div><span class="bar-d">S</span></div>
+              <div class="bar-col"><div class="bar" style="height:3px;background:#141414;"></div><span class="bar-d">S</span></div>
+            </div>
+          </div>
+
+          <div class="btns">
+            <button class="btn-s">Share</button>
+            <button class="btn-p">Next workout →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="screen-col">
+    <div class="slabel">Exercise log</div>
+    <div class="phone">
+      <div class="ph">
+        <div class="st"><span>9:41</span><span>⚡</span></div>
+        <div class="scr">
+          <div class="log-hd">
+            <p class="log-title">Today's log</p>
+            <p class="log-sub">Upper body · May 29, 2026</p>
+          </div>
+          <div class="ex-list">
+            <div class="ex">
+              <span class="ex-num">01</span>
+              <div class="ex-icon" style="background:#1c0e00;color:#f97316;">🏋</div>
+              <div class="ex-info">
+                <p class="ex-name">Bench press <span class="pr">PR</span></p>
+                <p class="ex-detail">4 × 8 · 80 kg</p>
+              </div>
+              <span class="check" style="color:#34d399;">✓</span>
+            </div>
+            <div class="ex">
+              <span class="ex-num">02</span>
+              <div class="ex-icon" style="background:#141420;color:#818cf8;">↑</div>
+              <div class="ex-info">
+                <p class="ex-name">Overhead press</p>
+                <p class="ex-detail">3 × 10 · 50 kg</p>
+              </div>
+              <span class="check" style="color:#34d399;">✓</span>
+            </div>
+            <div class="ex">
+              <span class="ex-num">03</span>
+              <div class="ex-icon" style="background:#0a1810;color:#34d399;">⟳</div>
+              <div class="ex-info">
+                <p class="ex-name">Cable row</p>
+                <p class="ex-detail">4 × 12 · 60 kg</p>
+              </div>
+              <span class="check" style="color:#34d399;">✓</span>
+            </div>
+            <div class="ex">
+              <span class="ex-num">04</span>
+              <div class="ex-icon" style="background:#181200;color:#fbbf24;">—</div>
+              <div class="ex-info">
+                <p class="ex-name">Lateral raises</p>
+                <p class="ex-detail">3 × 15 · 12 kg</p>
+              </div>
+              <span class="check" style="color:#34d399;">✓</span>
+            </div>
+            <div class="ex">
+              <span class="ex-num">05</span>
+              <div class="ex-icon" style="background:#160a14;color:#f472b6;">↕</div>
+              <div class="ex-info">
+                <p class="ex-name">Tricep dips</p>
+                <p class="ex-detail">3 × 12 · Bodyweight</p>
+              </div>
+              <span class="check" style="color:#34d399;">✓</span>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="bn"><span style="font-size:16px;">⌂</span><span>Home</span></div>
+            <div class="bn on"><span style="font-size:16px;">≡</span><span>Log</span></div>
+            <div class="bn"><span style="font-size:16px;">↗</span><span>Stats</span></div>
+            <div class="bn"><span style="font-size:16px;">○</span><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>UI/UX Concept — <strong>Pulse Fitness App</strong> — Designed by Mert Şafak Eyidoğan</footer>
+
+</body>
+</html>
