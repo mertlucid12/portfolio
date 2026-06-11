@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nexus — Analytics Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#050508;
+  --bg2:#08080f;
+  --surface:#0d0d18;
+  --surface2:#12121f;
+  --border:#1a1a2e;
+  --border2:#252540;
+  --text:#eeeef5;
+  --muted:#5a5a7a;
+  --muted2:#3a3a55;
+  --blue:#4f6ef7;
+  --violet:#8b5cf6;
+  --cyan:#06d6d6;
+  --blue-dim:rgba(79,110,247,0.1);
+  --violet-dim:rgba(139,92,246,0.08);
+  --cyan-dim:rgba(6,214,214,0.08);
+  --glow-blue:rgba(79,110,247,0.15);
+  --glow-violet:rgba(139,92,246,0.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#cur{width:8px;height:8px;background:var(--blue);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .15s,background .2s}
+#cur-r{width:32px;height:32px;border:1px solid rgba(79,110,247,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-color .2s}
+
+/* CANVAS */
+#bg-canvas{position:fixed;inset:0;z-index:0;opacity:.6}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,5,8,.8);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.04em;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;background:linear-gradient(135deg,var(--blue),var(--violet));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.nav-c{display:flex;align-items:center;gap:2rem}
+.nav-c a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .15s;letter-spacing:.01em}
+.nav-c a:hover{color:var(--text)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.btn-ghost{font-size:13px;color:var(--text);background:transparent;border:1px solid var(--border2);padding:7px 18px;border-radius:7px;text-decoration:none;transition:all .2s;cursor:none}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-blue{font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--blue),var(--violet));padding:8px 20px;border-radius:7px;text-decoration:none;border:none;cursor:none;transition:all .2s;position:relative;overflow:hidden}
+.btn-blue::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .2s}
+.btn-blue:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(79,110,247,.35)}
+.btn-blue:hover::after{opacity:1}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 2rem 4rem;position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border2);padding:6px 16px;border-radius:99px;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:2.5rem;opacity:0;animation:fadeUp .6s .1s forwards}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-badge span{color:var(--text);font-weight:600}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(3rem,7vw,6rem);font-weight:800;letter-spacing:-.05em;line-height:.95;margin-bottom:1.75rem;opacity:0;animation:fadeUp .7s .25s forwards}
+.hero h1 .grad{background:linear-gradient(135deg,var(--blue),var(--violet),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.1rem;color:var(--muted);line-height:1.7;max-width:520px;margin-bottom:2.5rem;font-weight:300;opacity:0;animation:fadeUp .6s .4s forwards}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:4rem;opacity:0;animation:fadeUp .6s .55s forwards}
+.btn-lg{padding:13px 28px;font-size:14px;font-weight:600}
+.btn-outline-lg{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:500;border-radius:8px;text-decoration:none;transition:all .2s;cursor:none}
+.btn-outline-lg:hover{border-color:var(--blue);transform:translateY(-1px)}
+
+/* HERO DASHBOARD MOCKUP */
+.hero-mockup{width:100%;max-width:900px;margin:0 auto;position:relative;opacity:0;animation:fadeUp .8s .7s forwards}
+.mockup-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:60%;background:radial-gradient(ellipse,rgba(79,110,247,.12) 0%,transparent 70%);pointer-events:none;z-index:-1}
+.mockup-frame{background:var(--surface);border:1px solid var(--border2);border-radius:16px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04)}
+.mockup-bar{height:40px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1rem;gap:6px}
+.m-dot{width:10px;height:10px;border-radius:50%}
+.mockup-body{padding:1.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.m-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.m-card-label{font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem}
+.m-card-val{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:-.03em}
+.m-card-change{font-size:11px;margin-top:4px}
+.m-up{color:#22d3a0}.m-down{color:#f87171}
+.m-chart-row{grid-column:1/-1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;height:120px;display:flex;align-items:flex-end;gap:4px}
+.m-bar{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(to top,var(--blue),var(--violet));opacity:.7;transition:opacity .2s}
+.m-bar:hover{opacity:1}
+.m-bar.active{opacity:1;box-shadow:0 0 12px rgba(79,110,247,.4)}
+
+/* LOGOS */
+.logos-section{padding:3rem 2.5rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;z-index:2;overflow:hidden}
+.logos-label{text-align:center;font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.5rem}
+.logos-track{display:flex;gap:0;width:max-content;animation:marquee 25s linear infinite}
+.logos-track:hover{animation-play-state:paused}
+.logo-item{padding:0 3rem;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--muted2);letter-spacing:-.02em;white-space:nowrap;transition:color .2s}
+.logo-item:hover{color:var(--muted)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* FEATURES */
+.features{padding:8rem 2.5rem;position:relative;z-index:2;max-width:1100px;margin:0 auto}
+.section-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:1rem}
+.section-tag::before{content:'';width:20px;height:1px;background:var(--blue)}
+.section-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:1rem}
+.section-sub{font-size:15px;color:var(--muted);line-height:1.7;max-width:480px;font-weight:300;margin-bottom:4rem}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;transition:border-color .25s,transform .25s,box-shadow .25s;position:relative;overflow:hidden}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:0;transition:opacity .3s}
+.feat-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.3)}
+.feat-card:hover::before{opacity:1}
+.feat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:1.25rem}
+.feat-name{font-weight:600;font-size:15px;margin-bottom:.5rem;letter-spacing:-.01em}
+.feat-desc{font-size:13px;color:var(--muted);line-height:1.65;font-weight:300}
+
+/* HIGHLIGHT */
+.highlight{padding:0 2.5rem 8rem;position:relative;z-index:2;max-width:1100px;margin:0 auto}
+.highlight-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center}
+.highlight-grid.rev{direction:rtl}
+.highlight-grid.rev>*{direction:ltr}
+.hl-visual{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;position:relative;overflow:hidden}
+.hl-visual::after{content:'';position:absolute;bottom:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,var(--glow-violet),transparent 70%);pointer-events:none}
+.hl-mini-chart{display:flex;align-items:flex-end;gap:3px;height:80px;margin-bottom:1rem}
+.hl-bar{flex:1;border-radius:2px 2px 0 0;background:linear-gradient(to top,var(--blue),var(--violet))}
+.hl-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hl-stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.75rem}
+.hl-stat-n{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;letter-spacing:-.03em}
+.hl-stat-l{font-size:11px;color:var(--muted);margin-top:2px}
+.hl-text .section-tag{margin-bottom:1rem}
+.hl-text .section-h2{font-size:clamp(1.75rem,3vw,2.5rem);margin-bottom:1rem}
+.hl-text p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;font-weight:300}
+.hl-list{list-style:none;display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem}
+.hl-list li{display:flex;align-items:center;gap:.75rem;font-size:14px;color:var(--muted)}
+.hl-list li::before{content:'✓';width:20px;height:20px;background:var(--blue-dim);border:1px solid rgba(79,110,247,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--blue);flex-shrink:0;line-height:20px;text-align:center}
+
+/* PRICING */
+.pricing{padding:0 2.5rem 8rem;position:relative;z-index:2;max-width:1100px;margin:0 auto;text-align:center}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:4rem;text-align:left}
+.price-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;position:relative;transition:transform .2s,border-color .2s,box-shadow .2s}
+.price-card:hover{transform:translateY(-4px);box-shadow:0 20px 56px rgba(0,0,0,.3)}
+.price-card.popular{border-color:var(--blue);background:var(--surface2)}
+.price-card.popular::before{content:'Most Popular';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff;font-size:11px;font-weight:600;padding:4px 14px;border-radius:99px;letter-spacing:.04em;white-space:nowrap}
+.price-name{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.price-val{font-family:'Space Grotesk',sans-serif;font-size:2.75rem;font-weight:800;letter-spacing:-.05em;line-height:1;margin-bottom:.25rem}
+.price-val .cur{font-size:1.25rem;vertical-align:top;margin-top:.4rem;display:inline-block;color:var(--muted)}
+.price-period{font-size:13px;color:var(--muted);margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border)}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem}
+.price-features li{display:flex;align-items:center;gap:.75rem;font-size:13px;color:var(--muted)}
+.price-features li .chk{color:var(--blue);font-size:12px;flex-shrink:0}
+.price-features li .x{color:var(--muted2);font-size:12px;flex-shrink:0}
+.price-btn{display:block;width:100%;text-align:center;padding:11px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;cursor:none}
+.price-btn-outline{border:1px solid var(--border2);color:var(--text)}
+.price-btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.price-btn-fill{background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff}
+.price-btn-fill:hover{opacity:.9;box-shadow:0 6px 20px rgba(79,110,247,.3)}
+
+/* TESTIMONIALS */
+.testimonials{padding:0 2.5rem 8rem;position:relative;z-index:2;max-width:1100px;margin:0 auto}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:4rem}
+.testi-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.75rem;transition:border-color .2s,transform .2s}
+.testi-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.testi-stars{color:var(--blue);font-size:12px;margin-bottom:.75rem;letter-spacing:2px}
+.testi-q{font-size:14px;color:var(--text);line-height:1.7;font-weight:300;margin-bottom:1.5rem;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.testi-name{font-size:13px;font-weight:600}
+.testi-role{font-size:11px;color:var(--muted)}
+
+/* FAQ */
+.faq{padding:0 2.5rem 8rem;position:relative;z-index:2;max-width:720px;margin:0 auto}
+.faq-list{margin-top:3rem;display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.faq-item{background:var(--surface);padding:1.5rem 1.75rem;cursor:none;transition:background .15s}
+.faq-item:hover{background:var(--surface2)}
+.faq-q{font-size:15px;font-weight:500;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.faq-q .arrow{color:var(--muted);font-size:18px;transition:transform .25s;flex-shrink:0}
+.faq-a{font-size:13px;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s,margin-top .3s;font-weight:300}
+.faq-item.open .faq-a{max-height:200px;margin-top:.75rem}
+.faq-item.open .arrow{transform:rotate(45deg);color:var(--blue)}
+
+/* CTA */
+.cta-wrap{padding:0 2.5rem 8rem;position:relative;z-index:2;max-width:1100px;margin:0 auto}
+.cta-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5rem 4rem;text-align:center;position:relative;overflow:hidden}
+.cta-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:1px;background:linear-gradient(90deg,transparent,var(--blue),var(--violet),transparent)}
+.cta-box::after{content:'';position:absolute;bottom:-100px;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(79,110,247,.07),transparent 70%);pointer-events:none}
+.cta-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.25rem,5vw,3.75rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:1rem}
+.cta-h2 .grad{background:linear-gradient(135deg,var(--blue),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cta-sub{font-size:15px;color:var(--muted);margin-bottom:2.5rem;font-weight:300}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-note{font-size:12px;color:var(--muted);margin-top:1rem}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:3rem 2.5rem;position:relative;z-index:2}
+.footer-top{display:flex;justify-content:space-between;gap:3rem;flex-wrap:wrap;margin-bottom:3rem}
+.footer-brand .logo{margin-bottom:.75rem;display:flex}
+.footer-brand p{font-size:13px;color:var(--muted);max-width:240px;line-height:1.6;font-weight:300}
+.footer-col h4{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.footer-col a{display:block;font-size:13px;color:var(--muted2);text-decoration:none;margin-bottom:.5rem;transition:color .15s}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;padding-top:2rem;border-top:1px solid var(--border);font-size:12px;color:var(--muted2)}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+.rv.on{opacity:1;transform:translateY(0)}
+.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}.rv.d3{transition-delay:.3s}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:900px){
+  nav{padding:0 1.25rem}
+  .nav-c{display:none}
+  .hero{padding:80px 1.5rem 3rem}
+  .features,.highlight,.pricing,.testimonials,.faq,.cta-wrap{padding-left:1.5rem;padding-right:1.5rem}
+  .features-grid,.pricing-grid,.testi-grid{grid-template-columns:1fr}
+  .highlight-grid,.highlight-grid.rev{grid-template-columns:1fr;direction:ltr}
+  .cta-box{padding:3rem 1.5rem}
+  footer{padding:2.5rem 1.5rem}
+  .footer-top{flex-direction:column}
+  .mockup-body{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="cur-r"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-mark">N</div>
+    Nexus
+  </a>
+  <div class="nav-c">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#testimonials">Reviews</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <div class="nav-r">
+    <a href="#" class="btn-ghost">Sign in</a>
+    <a href="#" class="btn-blue">Get started free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span> New — <span>AI-powered insights now available</span> →</div>
+  <h1>Analytics that<br/><span class="grad">actually work.</span></h1>
+  <p class="hero-sub">Nexus turns your raw data into clear decisions. Real-time dashboards, predictive analytics, and team collaboration — all in one platform.</p>
+  <div class="hero-btns">
+    <a href="#" class="btn-blue btn-lg">Start for free →</a>
+    <a href="#" class="btn-outline-lg">Watch demo <span>▶</span></a>
+  </div>
+
+  <!-- DASHBOARD MOCKUP -->
+  <div class="hero-mockup">
+    <div class="mockup-glow"></div>
+    <div class="mockup-frame">
+      <div class="mockup-bar">
+        <div class="m-dot" style="background:#ff5f57"></div>
+        <div class="m-dot" style="background:#febc2e"></div>
+        <div class="m-dot" style="background:#28c840"></div>
+        <div style="flex:1;height:20px;background:var(--border);border-radius:4px;margin-left:1rem;max-width:220px"></div>
+      </div>
+      <div class="mockup-body">
+        <div class="m-card">
+          <div class="m-card-label">Revenue</div>
+          <div class="m-card-val" style="color:var(--text)">$84.2k</div>
+          <div class="m-card-change m-up">↑ 12.4% vs last month</div>
+        </div>
+        <div class="m-card">
+          <div class="m-card-label">Active Users</div>
+          <div class="m-card-val" style="color:var(--blue)">24,891</div>
+          <div class="m-card-change m-up">↑ 8.1% vs last month</div>
+        </div>
+        <div class="m-card">
+          <div class="m-card-label">Churn Rate</div>
+          <div class="m-card-val" style="color:var(--violet)">2.3%</div>
+          <div class="m-card-change m-up">↓ 0.4% vs last month</div>
+        </div>
+        <div class="m-card">
+          <div class="m-card-label">NPS Score</div>
+          <div class="m-card-val" style="color:#22d3a0">72</div>
+          <div class="m-card-change m-up">↑ 5pts vs last month</div>
+        </div>
+        <div class="m-chart-row">
+          <div class="m-bar" style="height:35%"></div>
+          <div class="m-bar" style="height:52%"></div>
+          <div class="m-bar" style="height:44%"></div>
+          <div class="m-bar" style="height:68%"></div>
+          <div class="m-bar" style="height:55%"></div>
+          <div class="m-bar" style="height:72%"></div>
+          <div class="m-bar" style="height:61%"></div>
+          <div class="m-bar active" style="height:88%"></div>
+          <div class="m-bar" style="height:76%"></div>
+          <div class="m-bar" style="height:82%"></div>
+          <div class="m-bar" style="height:70%"></div>
+          <div class="m-bar" style="height:95%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGOS -->
+<div class="logos-section">
+  <p class="logos-label">Trusted by teams at</p>
+  <div class="logos-track">
+    <span class="logo-item">Stripe</span><span class="logo-item">Linear</span><span class="logo-item">Vercel</span><span class="logo-item">Notion</span><span class="logo-item">Figma</span><span class="logo-item">Loom</span><span class="logo-item">Framer</span><span class="logo-item">Resend</span><span class="logo-item">Railway</span>
+    <span class="logo-item">Stripe</span><span class="logo-item">Linear</span><span class="logo-item">Vercel</span><span class="logo-item">Notion</span><span class="logo-item">Figma</span><span class="logo-item">Loom</span><span class="logo-item">Framer</span><span class="logo-item">Resend</span><span class="logo-item">Railway</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-tag rv">Features</div>
+  <h2 class="section-h2 rv d1">Everything you need<br/>to move faster.</h2>
+  <p class="section-sub rv d2">Stop switching between tools. Nexus brings your analytics, reporting, and team collaboration into one clean interface.</p>
+  <div class="features-grid">
+    <div class="feat-card rv">
+      <div class="feat-icon" style="background:var(--blue-dim)">📊</div>
+      <div class="feat-name">Real-time Dashboards</div>
+      <p class="feat-desc">Live data streams with sub-second latency. Build custom dashboards with drag-and-drop widgets in minutes, not days.</p>
+    </div>
+    <div class="feat-card rv d1">
+      <div class="feat-icon" style="background:var(--violet-dim)">🤖</div>
+      <div class="feat-name">AI-Powered Insights</div>
+      <p class="feat-desc">Our AI surfaces anomalies, predicts trends, and suggests actions before problems become crises. Always one step ahead.</p>
+    </div>
+    <div class="feat-card rv d2">
+      <div class="feat-icon" style="background:var(--cyan-dim)">⚡</div>
+      <div class="feat-name">Instant Alerts</div>
+      <p class="feat-desc">Set thresholds and get notified via Slack, email, or SMS the moment something important happens. Never miss a beat.</p>
+    </div>
+    <div class="feat-card rv">
+      <div class="feat-icon" style="background:var(--blue-dim)">🔗</div>
+      <div class="feat-name">200+ Integrations</div>
+      <p class="feat-desc">Connect to Stripe, HubSpot, Salesforce, Postgres, and 196 more data sources in one click. No engineering required.</p>
+    </div>
+    <div class="feat-card rv d1">
+      <div class="feat-icon" style="background:var(--violet-dim)">👥</div>
+      <div class="feat-name">Team Collaboration</div>
+      <p class="feat-desc">Share dashboards, annotate charts, and assign action items to teammates. Everyone stays aligned without endless meetings.</p>
+    </div>
+    <div class="feat-card rv d2">
+      <div class="feat-icon" style="background:var(--cyan-dim)">🔒</div>
+      <div class="feat-name">Enterprise Security</div>
+      <p class="feat-desc">SOC 2 Type II certified. Row-level permissions, SSO, audit logs, and custom data retention policies included on all plans.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHT 1 -->
+<section class="highlight">
+  <div class="highlight-grid">
+    <div class="hl-visual rv">
+      <div style="font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Revenue overview · Last 30 days</div>
+      <div class="hl-mini-chart">
+        <div class="hl-bar" style="height:40%"></div><div class="hl-bar" style="height:55%"></div>
+        <div class="hl-bar" style="height:45%"></div><div class="hl-bar" style="height:70%"></div>
+        <div class="hl-bar" style="height:60%"></div><div class="hl-bar" style="height:80%"></div>
+        <div class="hl-bar" style="height:65%"></div><div class="hl-bar" style="height:90%"></div>
+        <div class="hl-bar" style="height:75%"></div><div class="hl-bar" style="height:100%"></div>
+      </div>
+      <div class="hl-stats">
+        <div class="hl-stat"><div class="hl-stat-n" style="color:var(--blue)">$284k</div><div class="hl-stat-l">Total revenue</div></div>
+        <div class="hl-stat"><div class="hl-stat-n" style="color:#22d3a0">+23%</div><div class="hl-stat-l">Growth rate</div></div>
+        <div class="hl-stat"><div class="hl-stat-n" style="color:var(--violet)">4,821</div><div class="hl-stat-l">Transactions</div></div>
+        <div class="hl-stat"><div class="hl-stat-n">$58.8</div><div class="hl-stat-l">Avg. order value</div></div>
+      </div>
+    </div>
+    <div class="hl-text rv d1">
+      <div class="section-tag">Revenue Analytics</div>
+      <h2 class="section-h2">See where every dollar comes from.</h2>
+      <p>Nexus connects to your payment processor and breaks down revenue by product, campaign, cohort, and geography — in real time.</p>
+      <ul class="hl-list">
+        <li>MRR, ARR, and churn tracked automatically</li>
+        <li>Attribution across all marketing channels</li>
+        <li>Cohort analysis with one click</li>
+        <li>Custom revenue forecasting models</li>
+      </ul>
+      <a href="#" class="btn-blue btn-lg" style="display:inline-flex;align-items:center;gap:8px">Explore revenue →</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-tag rv" style="justify-content:center">Pricing</div>
+  <h2 class="section-h2 rv d1">Simple, transparent pricing.</h2>
+  <p class="section-sub rv d2" style="margin:0 auto 0">No hidden fees. No surprises. Cancel anytime.</p>
+  <div class="pricing-grid">
+    <div class="price-card rv">
+      <div class="price-name">Starter</div>
+      <div class="price-val"><span class="cur">$</span>0</div>
+      <div class="price-period">Free forever · No credit card</div>
+      <ul class="price-features">
+        <li><span class="chk">✓</span>Up to 3 dashboards</li>
+        <li><span class="chk">✓</span>5 data sources</li>
+        <li><span class="chk">✓</span>7-day data history</li>
+        <li><span class="chk">✓</span>Basic alerts</li>
+        <li><span class="x">✗</span><span style="color:var(--muted2)">AI insights</span></li>
+        <li><span class="x">✗</span><span style="color:var(--muted2)">Team collaboration</span></li>
+      </ul>
+      <a href="#" class="price-btn price-btn-outline">Get started free</a>
+    </div>
+    <div class="price-card popular rv d1">
+      <div class="price-name">Pro</div>
+      <div class="price-val"><span class="cur">$</span>49</div>
+      <div class="price-period">per month · billed monthly</div>
+      <ul class="price-features">
+        <li><span class="chk">✓</span>Unlimited dashboards</li>
+        <li><span class="chk">✓</span>50 data sources</li>
+        <li><span class="chk">✓</span>1-year data history</li>
+        <li><span class="chk">✓</span>Advanced alerts + Slack</li>
+        <li><span class="chk">✓</span>AI-powered insights</li>
+        <li><span class="chk">✓</span>Up to 10 team members</li>
+      </ul>
+      <a href="#" class="price-btn price-btn-fill">Start free trial</a>
+    </div>
+    <div class="price-card rv d2">
+      <div class="price-name">Enterprise</div>
+      <div class="price-val" style="font-size:2rem">Custom</div>
+      <div class="price-period">Annual contract · Volume pricing</div>
+      <ul class="price-features">
+        <li><span class="chk">✓</span>Everything in Pro</li>
+        <li><span class="chk">✓</span>Unlimited data sources</li>
+        <li><span class="chk">✓</span>Unlimited history</li>
+        <li><span class="chk">✓</span>SSO + SAML</li>
+        <li><span class="chk">✓</span>Dedicated support</li>
+        <li><span class="chk">✓</span>Custom SLA</li>
+      </ul>
+      <a href="#" class="price-btn price-btn-outline">Contact sales</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="section-tag rv">Reviews</div>
+  <h2 class="section-h2 rv d1">Loved by data teams<br/>everywhere.</h2>
+  <div class="testi-grid">
+    <div class="testi-card rv">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-q">Nexus replaced four separate tools for us. The AI anomaly detection caught a billing bug before it cost us $40k. Genuinely impressed.</p>
+      <div class="testi-author">
+        <div class="testi-av" style="background:var(--blue-dim);color:var(--blue)">AK</div>
+        <div><div class="testi-name">Alex K.</div><div class="testi-role">Head of Data, Meridian</div></div>
+      </div>
+    </div>
+    <div class="testi-card rv d1">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-q">Setup took 20 minutes. Our whole team was using it by end of day. The dashboards look beautiful and the data is always accurate.</p>
+      <div class="testi-author">
+        <div class="testi-av" style="background:var(--violet-dim);color:var(--violet)">SR</div>
+        <div><div class="testi-name">Sofia R.</div><div class="testi-role">CEO, Bloom Health</div></div>
+      </div>
+    </div>
+    <div class="testi-card rv d2">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-q">We tried three other platforms. Nexus is the only one that actually handles our data volume without slowing down. Worth every penny.</p>
+      <div class="testi-author">
+        <div class="testi-av" style="background:var(--cyan-dim);color:var(--cyan)">JP</div>
+        <div><div class="testi-name">James P.</div><div class="testi-role">CTO, NovaSaaS</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="section-tag rv" style="justify-content:center">FAQ</div>
+  <h2 class="section-h2 rv d1" style="text-align:center;font-size:2rem">Common questions.</h2>
+  <div class="faq-list rv d2">
+    <div class="faq-item">
+      <div class="faq-q">How long does setup take? <span class="arrow">+</span></div>
+      <div class="faq-a">Most teams are fully set up in under 30 minutes. Connect your data sources, choose a template dashboard, and you're live. No engineering required.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I import historical data? <span class="arrow">+</span></div>
+      <div class="faq-a">Yes. We support bulk imports from CSV, SQL databases, and most major SaaS platforms. Historical data is available immediately after import.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is my data secure? <span class="arrow">+</span></div>
+      <div class="faq-a">Nexus is SOC 2 Type II certified. All data is encrypted in transit and at rest. We never sell or share your data, ever.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I cancel anytime? <span class="arrow">+</span></div>
+      <div class="faq-a">Absolutely. No lock-in, no cancellation fees. Cancel from your account settings at any time. Your data is exportable before you go.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Do you offer a free trial? <span class="arrow">+</span></div>
+      <div class="faq-a">Yes — our Starter plan is free forever. Pro plans come with a 14-day free trial, no credit card required.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-wrap">
+  <div class="cta-box rv">
+    <h2 class="cta-h2">Start making<br/><span class="grad">better decisions.</span></h2>
+    <p class="cta-sub">Join 12,000+ teams using Nexus to understand their business.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-blue btn-lg">Get started free →</a>
+      <a href="#" class="btn-outline-lg">Talk to sales</a>
+    </div>
+    <p class="cta-note">No credit card required · Free forever plan available · Setup in 20 minutes</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a class="logo" href="#"><div class="logo-mark">N</div>Nexus</a>
+      <p>Analytics that help you understand your business and move faster than your competition.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#">Features</a><a href="#">Pricing</a><a href="#">Changelog</a><a href="#">Roadmap</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About</a><a href="#">Blog</a><a href="#">Careers</a><a href="#">Press</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Security</a><a href="#">Cookies</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Nexus Analytics, Inc.</span>
+    <span>Built with ❤️ for data teams</span>
+  </div>
+</footer>
+
+<script>
+// CURSOR
+const cur = document.getElementById('cur');
+const curR = document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function loop(){
+  rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+  curR.style.left=rx+'px'; curR.style.top=ry+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.faq-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{curR.style.width='50px';curR.style.height='50px';curR.style.borderColor='rgba(79,110,247,.7)';cur.style.transform='translate(-50%,-50%) scale(0)'});
+  el.addEventListener('mouseleave',()=>{curR.style.width='32px';curR.style.height='32px';curR.style.borderColor='rgba(79,110,247,.4)';cur.style.transform='translate(-50%,-50%) scale(1)'});
+});
+
+// CANVAS PARTICLES
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+resize(); window.addEventListener('resize',resize);
+class Particle{
+  constructor(){this.reset()}
+  reset(){
+    this.x=Math.random()*W; this.y=Math.random()*H;
+    this.vx=(Math.random()-.5)*.3; this.vy=(Math.random()-.5)*.3;
+    this.r=Math.random()*1.5+.5;
+    this.alpha=Math.random()*.5+.1;
+    this.color=Math.random()>.5?'79,110,247':'139,92,246';
+  }
+  update(){
+    this.x+=this.vx; this.y+=this.vy;
+    if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset();
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${this.color},${this.alpha})`;
+    ctx.fill();
+  }
+}
+for(let i=0;i<120;i++) particles.push(new Particle());
+
+function drawLines(){
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x;
+      const dy=particles[i].y-particles[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle=`rgba(79,110,247,${.08*(1-d/120)})`;
+        ctx.lineWidth=.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{p.update();p.draw()});
+  drawLines();
+  requestAnimationFrame(animate);
+}
+animate();
+
+// SCROLL REVEAL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')});
+},{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+// FAQ
+document.querySelectorAll('.faq-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    const isOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+    if(!isOpen)item.classList.add('open');
+  });
+});
+
+// PARALLAX
+document.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  const mockup=document.querySelector('.hero-mockup');
+  if(mockup)mockup.style.transform=`translateY(${y*.08}px)`;
+});
+</script>
+</body>
+</html>
