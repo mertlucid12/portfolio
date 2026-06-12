@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KUMO — Elevated Japanese Cuisine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9A96E;
+      --gold-light: #E8D5A3;
+      --gold-dark: #8B6914;
+      --bg: #0A0A0A;
+      --bg2: #111111;
+      --bg3: #161616;
+      --text: #F0EDE8;
+      --text-muted: #7A7570;
+      --border: rgba(201,169,110,0.15);
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 4rem;
+      transition: background 0.4s, padding 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(12px);
+      padding: 1rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .nav-logo span { color: var(--text); }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-decoration: none;
+      border: 1px solid var(--gold);
+      padding: 0.6rem 1.4rem;
+      transition: background 0.3s, color 0.3s;
+    }
+    .nav-cta:hover { background: var(--gold); color: var(--bg); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 24px; height: 1px; background: var(--gold); display: block; transition: 0.3s; }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 700px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://d8j0ntlcm91z4.cloudfront.net/user_3F2zcz5fr1vs1XT4jS3Ft5ezhYe/hf_20260612_182902_0827efc3-b28a-406a-8fae-697bf6aed265_min.webp');
+      background-size: cover;
+      background-position: center;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 60% 40%, rgba(201,169,110,0.08) 0%, transparent 60%),
+        linear-gradient(to bottom, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.75) 100%);
+    }
+    /* animated particles */
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      background: var(--gold);
+      border-radius: 50%;
+      animation: float linear infinite;
+      opacity: 0;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10% { opacity: 0.4; }
+      90% { opacity: 0.2; }
+      100% { transform: translateY(-20px) translateX(40px); opacity: 0; }
+    }
+
+    /* vertical line decorations */
+    .hero-line {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border), transparent);
+    }
+    .hero-line:nth-child(1) { left: 10%; }
+    .hero-line:nth-child(2) { right: 10%; }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      padding: 2rem;
+      max-width: 900px;
+    }
+    .hero-eyebrow {
+      font-family: var(--sans);
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: '';
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(4rem, 10vw, 9rem);
+      font-weight: 300;
+      line-height: 0.95;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.2rem;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .hero-subtitle {
+      font-family: var(--serif);
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      letter-spacing: 0.05em;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--gold);
+      padding: 1rem 2.5rem;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-ghost {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text);
+      border: 1px solid rgba(240,237,232,0.2);
+      padding: 1rem 2.5rem;
+      text-decoration: none;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .hero-scroll span {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* ── SECTION BASE ── */
+    section { position: relative; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    .section-label {
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .section-label::before {
+      content: '';
+      width: 30px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--text);
+    }
+    .section-title em { font-style: italic; color: var(--gold); }
+
+    /* ── INTRO / PHILOSOPHY ── */
+    #philosophy {
+      padding: 9rem 0;
+      background: var(--bg2);
+    }
+    .philosophy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .philosophy-text p {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .philosophy-text p strong {
+      color: var(--text);
+      font-weight: 400;
+    }
+    .philosophy-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 3rem;
+    }
+    .stat-box {
+      background: var(--bg3);
+      padding: 2rem;
+      border: 1px solid var(--border);
+    }
+    .stat-number {
+      font-family: var(--serif);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+    .philosophy-image {
+      position: relative;
+    }
+    .img-placeholder {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    /* SVG art — chopsticks & bowl */
+    .img-placeholder svg {
+      width: 60%;
+      opacity: 0.5;
+    }
+    .img-corner {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-color: var(--gold);
+      border-style: solid;
+      opacity: 0.4;
+    }
+    .img-corner.tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+    .img-corner.br { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+
+    /* ── MENU ── */
+    #menu {
+      padding: 9rem 0;
+      background: var(--bg);
+    }
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 4rem;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .menu-tabs {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+    }
+    .tab {
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.7rem 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--border);
+      transition: color 0.3s, background 0.3s;
+      font-family: var(--sans);
+    }
+    .tab:last-child { border-right: none; }
+    .tab.active { color: var(--bg); background: var(--gold); }
+    .tab:hover:not(.active) { color: var(--gold); }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1px;
+      background: var(--border);
+    }
+    .menu-item {
+      background: var(--bg2);
+      padding: 2.2rem;
+      transition: background 0.3s;
+    }
+    .menu-item:hover { background: var(--bg3); }
+    .menu-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.5rem;
+    }
+    .menu-item-name {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--text);
+    }
+    .menu-item-price {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      color: var(--gold);
+      font-weight: 300;
+    }
+    .menu-item-jp {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      opacity: 0.6;
+      margin-bottom: 0.8rem;
+    }
+    .menu-item-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .menu-item-tags {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,169,110,0.3);
+      padding: 0.2rem 0.6rem;
+    }
+
+    /* ── EXPERIENCE ── */
+    #experience {
+      padding: 9rem 0;
+      background: var(--bg2);
+      overflow: hidden;
+    }
+    .experience-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .experience-visual {
+      position: relative;
+    }
+    .exp-main-img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .exp-overlay-img {
+      position: absolute;
+      bottom: -2rem;
+      right: -3rem;
+      width: 55%;
+      aspect-ratio: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+    .experience-content .section-title { margin-bottom: 2rem; }
+    .experience-content p {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .feature-list {
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .feature-item {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .feature-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--gold);
+      font-family: var(--serif);
+      font-size: 1.1rem;
+    }
+    .feature-text h4 {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+    .feature-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── CHEFS ── */
+    #team {
+      padding: 9rem 0;
+      background: var(--bg);
+    }
+    .team-header { text-align: center; margin-bottom: 4rem; }
+    .team-header .section-label { justify-content: center; }
+    .team-header .section-label::before { display: none; }
+    .team-header .section-label::after {
+      content: '';
+      width: 30px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+    }
+    .chef-card {
+      background: var(--bg2);
+      overflow: hidden;
+      transition: transform 0.4s;
+    }
+    .chef-photo {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: var(--bg3);
+      position: relative;
+      overflow: hidden;
+    }
+    .chef-photo-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chef-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      color: var(--gold);
+    }
+    .chef-gradient {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 60%;
+      background: linear-gradient(to top, var(--bg2), transparent);
+    }
+    .chef-info {
+      padding: 1.5rem 2rem 2rem;
+    }
+    .chef-name {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+    .chef-role {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.8rem;
+    }
+    .chef-bio {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ── RESERVATION ── */
+    #reservation {
+      padding: 9rem 0;
+      background: var(--bg2);
+    }
+    .reservation-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+    .reservation-info p {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+    .info-blocks { display: flex; flex-direction: column; gap: 1px; }
+    .info-block {
+      background: var(--bg3);
+      padding: 1.5rem 2rem;
+      border-left: 1px solid var(--gold);
+    }
+    .info-block h4 {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .info-block p {
+      font-size: 0.9rem;
+      color: var(--text);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* form */
+    .reservation-form { display: flex; flex-direction: column; gap: 1.5rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .form-group label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.9rem 1rem;
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.3s;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+    }
+    .form-group select { cursor: pointer; }
+    .form-group textarea { resize: none; height: 100px; }
+    .form-submit {
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      padding: 1.1rem;
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.3s;
+      width: 100%;
+    }
+    .form-submit:hover { background: var(--gold-light); }
+
+    /* ── GALLERY ── */
+    #gallery {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto;
+    }
+    .gallery-cell {
+      aspect-ratio: 1;
+      background: var(--bg3);
+      border: 1px solid var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .gallery-cell:nth-child(1) { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+    .gallery-cell .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .gallery-cell:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay-text {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+    }
+    /* colorful abstract fills for gallery */
+    .gc-1 { background: linear-gradient(135deg, #1a1208 0%, #2d1f0a 50%, #1a1208 100%); }
+    .gc-2 { background: linear-gradient(135deg, #0a0f1a 0%, #111a2d 100%); }
+    .gc-3 { background: linear-gradient(135deg, #1a0a0a 0%, #2d0f0f 100%); }
+    .gc-4 { background: linear-gradient(135deg, #0a1a0f 0%, #0f2d1a 100%); }
+    .gc-5 { background: linear-gradient(135deg, #1a1508 0%, #2d2510 100%); }
+
+    /* SVG food icons in gallery */
+    .gallery-icon { opacity: 0.15; }
+
+    /* ── TESTIMONIALS ── */
+    #testimonials {
+      padding: 9rem 0;
+      background: var(--bg);
+      overflow: hidden;
+    }
+    .testimonials-header { text-align: center; margin-bottom: 5rem; }
+    .testimonials-header .section-label { justify-content: center; }
+    .testimonials-header .section-label::before { display: none; }
+    .testimonials-header .section-label::after { content: ''; width: 30px; height: 1px; background: var(--gold); }
+    .testimonials-track {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+    .testimonial-card {
+      background: var(--bg2);
+      padding: 3rem;
+    }
+    .testimonial-stars {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 1.5rem;
+      color: var(--gold);
+      font-size: 0.8rem;
+    }
+    .testimonial-text {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 1rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .author-name {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--text);
+    }
+    .author-source {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 5rem 0 2rem;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.5fr;
+      gap: 4rem;
+      padding-bottom: 4rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .footer-brand .nav-logo {
+      display: block;
+      margin-bottom: 1.5rem;
+      font-size: 1.4rem;
+    }
+    .footer-brand p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      max-width: 280px;
+    }
+    .footer-socials {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+    }
+    .social-link {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .social-link:hover { border-color: var(--gold); color: var(--gold); }
+    .footer-col h4 {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+    .footer-col ul a {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-col ul a:hover { color: var(--text); }
+    .footer-col address {
+      font-style: normal;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 2;
+    }
+    .footer-col address strong {
+      color: var(--text);
+      font-weight: 400;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-bottom p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .footer-bottom span { color: var(--gold); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      margin: 2rem 0;
+    }
+
+    /* ── ANNOUNCEMENT BANNER ── */
+    .announcement {
+      background: var(--gold);
+      padding: 0.7rem 2rem;
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--bg);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      nav { padding: 1.5rem 2rem; }
+      nav.scrolled { padding: 1rem 2rem; }
+      .philosophy-grid,
+      .experience-layout,
+      .reservation-wrap { grid-template-columns: 1fr; gap: 3rem; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+      .testimonials-track { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .hero-title { font-size: clamp(3.5rem, 14vw, 6rem); }
+      .menu-header { flex-direction: column; align-items: flex-start; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      #gallery { grid-template-columns: repeat(2, 1fr); }
+      .gallery-cell:nth-child(1) { grid-column: span 2; }
+      .form-row { grid-template-columns: 1fr; }
+      .hero-line { display: none; }
+      .philosophy-stats { grid-template-columns: 1fr 1fr; }
+      .exp-overlay-img { display: none; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 1.5rem; }
+      #philosophy, #menu, #experience, #team, #reservation, #testimonials { padding: 5rem 0; }
+      footer { padding: 3rem 0 1.5rem; }
+    }
+
+    /* ── MOBILE NAV ── */
+    .mobile-nav {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,10,10,0.97);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.76,0,0.24,1);
+    }
+    .mobile-nav.open { transform: translateX(0); }
+    .mobile-nav a {
+      font-family: var(--serif);
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+    }
+    .mobile-nav a:hover { color: var(--gold); }
+    .mobile-nav-close {
+      position: absolute;
+      top: 1.5rem; right: 2rem;
+      background: none;
+      border: none;
+      color: var(--gold);
+      font-size: 1.5rem;
+      cursor: pointer;
+      font-family: var(--serif);
+    }
+
+    /* ── FADE IN ANIMATION ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Announcement -->
+  <div class="announcement">
+    Now accepting reservations for summer omakase — Limited seats available
+  </div>
+
+  <!-- Nav -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">KU<span>MO</span></a>
+    <ul class="nav-links">
+      <li><a href="#philosophy">About</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#team">Chefs</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+    </ul>
+    <a href="#reservation" class="nav-cta">Reserve a Table</a>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" id="mobileNavClose">✕</button>
+    <a href="#philosophy" onclick="closeMobileNav()">About</a>
+    <a href="#menu" onclick="closeMobileNav()">Menu</a>
+    <a href="#experience" onclick="closeMobileNav()">Experience</a>
+    <a href="#team" onclick="closeMobileNav()">Chefs</a>
+    <a href="#reservation" onclick="closeMobileNav()">Reserve</a>
+  </div>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="particles" id="particles"></div>
+    <div class="hero-line"></div>
+    <div class="hero-line"></div>
+    <div class="hero-content fade-up">
+      <div class="hero-eyebrow">Tokyo · Refined · Seasonal</div>
+      <h1 class="hero-title">Ku<em>mo</em></h1>
+      <p class="hero-subtitle">Where tradition meets the art of the transient</p>
+      <div class="hero-actions">
+        <a href="#menu" class="btn-primary">Explore Menu</a>
+        <a href="#reservation" class="btn-ghost">Book a Table</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- Philosophy -->
+  <section id="philosophy">
+    <div class="container">
+      <div class="philosophy-grid">
+        <div class="philosophy-text fade-up">
+          <div class="section-label">Our Philosophy</div>
+          <h2 class="section-title">The <em>art</em> of impermanence</h2>
+          <div class="divider"></div>
+          <p>KUMO — meaning <strong>"cloud"</strong> in Japanese — was born from a singular obsession: the fleeting perfection of a single, extraordinary bite. Every dish is a meditation on impermanence, crafted to exist only in this moment.</p>
+          <p>We source exclusively from a curated network of Japanese farmers, coastal fishermen, and artisan producers. The menu shifts with the seasons, honouring the ancient philosophy of <strong>shun</strong> — the brief window when an ingredient reaches its absolute peak.</p>
+          <div class="philosophy-stats">
+            <div class="stat-box">
+              <div class="stat-number">12</div>
+              <div class="stat-label">Course Omakase</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">8+</div>
+              <div class="stat-label">Years of Excellence</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">2</div>
+              <div class="stat-label">Michelin Stars</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">40+</div>
+              <div class="stat-label">Artisan Producers</div>
+            </div>
+          </div>
+        </div>
+        <div class="philosophy-image fade-up">
+          <div class="img-placeholder" style="background:none;">
+            <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3F2zcz5fr1vs1XT4jS3Ft5ezhYe/hf_20260612_182908_89ea1064-8ea0-4bef-ab9a-7cfcf8e6516d_min.webp" alt="Premium Nigiri" style="width:100%;height:100%;object-fit:cover;display:block;" />
+            <div class="img-corner tl"></div>
+            <div class="img-corner br"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menu -->
+  <section id="menu">
+    <div class="container">
+      <div class="menu-header">
+        <div>
+          <div class="section-label">Seasonal Offerings</div>
+          <h2 class="section-title">Our <em>Menu</em></h2>
+        </div>
+        <div class="menu-tabs">
+          <button class="tab active" onclick="switchTab(this,'omakase')">Omakase</button>
+          <button class="tab" onclick="switchTab(this,'nigiri')">Nigiri</button>
+          <button class="tab" onclick="switchTab(this,'small')">Small Plates</button>
+          <button class="tab" onclick="switchTab(this,'desserts')">Desserts</button>
+        </div>
+      </div>
+
+      <div class="menu-grid" id="menuGrid"></div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience">
+    <div class="container">
+      <div class="experience-layout">
+        <div class="experience-visual fade-up">
+          <div class="exp-main-img" style="background:none;overflow:hidden;">
+            <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3F2zcz5fr1vs1XT4jS3Ft5ezhYe/hf_20260612_182912_b74c1191-6230-4565-9b2d-bffa2457f2d2_min.webp" alt="Chef at work" style="width:100%;height:100%;object-fit:cover;display:block;" />
+          </div>
+          <div class="exp-overlay-img gc-2"></div>
+        </div>
+        <div class="experience-content fade-up">
+          <div class="section-label">The Setting</div>
+          <h2 class="section-title">A world unto <em>itself</em></h2>
+          <p>Step through our doors and the city dissolves. KUMO's interior is a study in refined restraint — hand-plastered walls, aged hinoki wood, and the soft percussion of a bamboo water feature.</p>
+          <p>The centerpiece is our 18-seat omakase counter, where you dine in direct dialogue with the chef. Every gesture, every placement, is considered. This is theatre as hospitality.</p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon">一</div>
+              <div class="feature-text">
+                <h4>Omakase Counter</h4>
+                <p>18 seats arranged around a single hinoki counter. Watch your meal take shape before you.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">二</div>
+              <div class="feature-text">
+                <h4>Private Kaiseki Rooms</h4>
+                <p>Three intimate rooms for up to 8 guests. Ideal for business dinners or milestone celebrations.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">三</div>
+              <div class="feature-text">
+                <h4>The Sake Cellar</h4>
+                <p>Over 200 selections curated by our resident kikisake-shi (sake sommelier).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section id="team">
+    <div class="container">
+      <div class="team-header fade-up">
+        <div class="section-label">The Craftsmen</div>
+        <h2 class="section-title">Meet the <em>chefs</em></h2>
+      </div>
+      <div class="team-grid">
+        <div class="chef-card fade-up">
+          <div class="chef-photo gc-1">
+            <div class="chef-photo-inner">
+              <div class="chef-avatar">K</div>
+            </div>
+            <div class="chef-gradient"></div>
+          </div>
+          <div class="chef-info">
+            <div class="chef-name">Kenji Murakami</div>
+            <div class="chef-role">Executive Chef &amp; Owner</div>
+            <p class="chef-bio">Trained under Jiro Ono for seven years before cutting his own path. Kenji brings a lifetime of mastery to every plate — technique is invisible, only flavour remains.</p>
+          </div>
+        </div>
+        <div class="chef-card fade-up">
+          <div class="chef-photo gc-2">
+            <div class="chef-photo-inner">
+              <div class="chef-avatar">A</div>
+            </div>
+            <div class="chef-gradient"></div>
+          </div>
+          <div class="chef-info">
+            <div class="chef-name">Aiko Tanaka</div>
+            <div class="chef-role">Head Sushi Chef</div>
+            <p class="chef-bio">One of only a handful of women to hold the title of shokunin in Japan, Aiko's nigiri is architectural: precise, balanced, and alive with umami.</p>
+          </div>
+        </div>
+        <div class="chef-card fade-up">
+          <div class="chef-photo gc-5">
+            <div class="chef-photo-inner">
+              <div class="chef-avatar">R</div>
+            </div>
+            <div class="chef-gradient"></div>
+          </div>
+          <div class="chef-info">
+            <div class="chef-name">Riku Hayashi</div>
+            <div class="chef-role">Pastry &amp; Wagashi Chef</div>
+            <p class="chef-bio">Riku studied traditional wagashi in Kyoto for five years before fusing those techniques with French patisserie. His desserts close the meal like the final note of a haiku.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <div id="gallery">
+    <div class="gallery-cell" style="min-height:400px;grid-column:span 2;grid-row:span 2;background:none;overflow:hidden;">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3F2zcz5fr1vs1XT4jS3Ft5ezhYe/hf_20260612_182902_0827efc3-b28a-406a-8fae-697bf6aed265_min.webp" alt="The Counter" style="width:100%;height:100%;object-fit:cover;" />
+      <div class="gallery-overlay"><span class="gallery-overlay-text">The Counter</span></div>
+    </div>
+    <div class="gallery-cell gc-2">
+      <div class="gallery-overlay"><span class="gallery-overlay-text">Nigiri</span></div>
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style="opacity:0.2">
+        <ellipse cx="40" cy="50" rx="25" ry="12" stroke="#C9A96E" stroke-width="1"/>
+        <ellipse cx="40" cy="38" rx="20" ry="8" fill="#C9A96E" opacity="0.15"/>
+        <path d="M20 50 Q20 65 40 68 Q60 65 60 50" stroke="#C9A96E" stroke-width="0.8" fill="none"/>
+      </svg>
+    </div>
+    <div class="gallery-cell" style="background:none;overflow:hidden;">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3F2zcz5fr1vs1XT4jS3Ft5ezhYe/hf_20260612_182922_31f03e14-0b77-45cc-9a3c-dd301809eb49_min.webp" alt="Sake Selection" style="width:100%;height:100%;object-fit:cover;" />
+      <div class="gallery-overlay"><span class="gallery-overlay-text">Sake Selection</span></div>
+    </div>
+    <div class="gallery-cell" style="background:none;overflow:hidden;">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3F2zcz5fr1vs1XT4jS3Ft5ezhYe/hf_20260612_182917_215d8c75-1e17-4212-9c8c-3cbfeb977a15_min.webp" alt="Wagashi" style="width:100%;height:100%;object-fit:cover;" />
+      <div class="gallery-overlay"><span class="gallery-overlay-text">Wagashi</span></div>
+    </div>
+    <div class="gallery-cell gc-5">
+      <div class="gallery-overlay"><span class="gallery-overlay-text">Wagashi</span></div>
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style="opacity:0.2">
+        <circle cx="40" cy="40" r="20" stroke="#C9A96E" stroke-width="1"/>
+        <path d="M40 20 Q50 30 40 40 Q30 50 40 60" stroke="#C9A96E" stroke-width="0.8" fill="none"/>
+        <circle cx="40" cy="40" r="4" fill="#C9A96E" opacity="0.3"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Testimonials -->
+  <section id="testimonials">
+    <div class="container">
+      <div class="testimonials-header fade-up">
+        <div class="section-label">Voices</div>
+        <h2 class="section-title">What our guests <em>say</em></h2>
+      </div>
+      <div class="testimonials-track">
+        <div class="testimonial-card fade-up">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"KUMO redefines what a meal can be. Kenji's omakase is not food — it is a conversation with centuries of craft. We left in reverent silence."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">S</div>
+            <div>
+              <div class="author-name">Sofia Andersen</div>
+              <div class="author-source">The New York Times</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card fade-up">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The kind of restaurant you build a trip around. I have dined at the world's finest tables — KUMO belongs among them without question."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">M</div>
+            <div>
+              <div class="author-name">Marcus Chen</div>
+              <div class="author-source">Bon Appétit</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card fade-up">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Each course arrived like a poem — spare, precise, and completely devastating. The bluefin toro alone is worth the journey across the city."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">L</div>
+            <div>
+              <div class="author-name">Léa Fontaine</div>
+              <div class="author-source">Le Monde</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reservation -->
+  <section id="reservation">
+    <div class="container">
+      <div class="reservation-wrap">
+        <div class="reservation-info fade-up">
+          <div class="section-label">Join Us</div>
+          <h2 class="section-title">Make a <em>reservation</em></h2>
+          <div class="divider"></div>
+          <p>We accept reservations up to 60 days in advance. For same-day availability or private dining enquiries, please call us directly.</p>
+          <div class="info-blocks">
+            <div class="info-block">
+              <h4>Location</h4>
+              <p>12 Ebisu West, Shibuya<br>Tokyo 150-0013, Japan</p>
+            </div>
+            <div class="info-block">
+              <h4>Hours</h4>
+              <p>Tuesday – Sunday<br>Seatings at 18:00 &amp; 20:30</p>
+            </div>
+            <div class="info-block">
+              <h4>Contact</h4>
+              <p>+81 3 0000 0000<br>hello@kumo-tokyo.com</p>
+            </div>
+          </div>
+        </div>
+        <div class="fade-up">
+          <form class="reservation-form" onsubmit="handleReservation(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>First Name</label>
+                <input type="text" placeholder="Kenji" />
+              </div>
+              <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" placeholder="Tanaka" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="you@example.com" />
+              </div>
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" placeholder="+1 000 000 0000" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Date</label>
+                <input type="date" />
+              </div>
+              <div class="form-group">
+                <label>Seating</label>
+                <select>
+                  <option value="">Select time</option>
+                  <option>18:00 — First seating</option>
+                  <option>20:30 — Second seating</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Guests</label>
+                <select>
+                  <option>1 Guest</option>
+                  <option selected>2 Guests</option>
+                  <option>3 Guests</option>
+                  <option>4 Guests</option>
+                  <option>5+ Guests</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Experience</label>
+                <select>
+                  <option>Omakase (¥32,000)</option>
+                  <option>Kaiseki (¥28,000)</option>
+                  <option>À la carte</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Special Requests</label>
+              <textarea placeholder="Dietary requirements, allergies, occasions…"></textarea>
+            </div>
+            <button type="submit" class="form-submit">Request Reservation</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#hero" class="nav-logo">KU<span>MO</span></a>
+          <p>A temple of Japanese culinary art nestled in the heart of Ebisu. Reservations essential. Walk-ins welcome at the sake bar.</p>
+          <div class="footer-socials">
+            <a href="#" class="social-link">ig</a>
+            <a href="#" class="social-link">fb</a>
+            <a href="#" class="social-link">tw</a>
+            <a href="#" class="social-link">yt</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Navigate</h4>
+          <ul>
+            <li><a href="#philosophy">About</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#team">Our Chefs</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Dining</h4>
+          <ul>
+            <li><a href="#">Omakase</a></li>
+            <li><a href="#">Kaiseki</a></li>
+            <li><a href="#">Private Rooms</a></li>
+            <li><a href="#">Sake Cellar</a></li>
+            <li><a href="#">Gift Cards</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Visit</h4>
+          <address>
+            <strong>Kumo Restaurant</strong>
+            12 Ebisu West, Shibuya<br>
+            Tokyo 150-0013<br><br>
+            <strong>Reservations</strong>
+            +81 3 0000 0000<br>
+            hello@kumo-tokyo.com
+          </address>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 <span>Kumo Tokyo</span>. All rights reserved.</p>
+        <p>Privacy Policy · Terms of Service</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ── MENU DATA ── */
+    const menuData = {
+      omakase: [
+        { name: "Ayu Shioyaki", jp: "鮎塩焼き", price: "¥3,200", desc: "River sweetfish grilled over binchotan charcoal, yuzu kosho, sansho leaf.", tags: ["Seasonal", "Signature"] },
+        { name: "Uni Chawanmushi", jp: "雲丹茶碗蒸し", price: "¥4,800", desc: "Silken egg custard with Hokkaido sea urchin, dashi gelée, truffle shavings.", tags: ["Signature"] },
+        { name: "A5 Wagyu Tataki", jp: "和牛叩き", price: "¥6,800", desc: "Miyazaki prefecture A5 wagyu, seared seven seconds, ponzu, pickled myoga.", tags: ["Premium"] },
+        { name: "Toro Nigiri", jp: "大トロ握り", price: "¥2,400", desc: "Bluefin fatty tuna, aged 48 hours, hand-pressed with freshly grated wasabi.", tags: ["Signature", "Premium"] },
+        { name: "Lobster Miso Soup", jp: "伊勢海老味噌汁", price: "¥3,600", desc: "Whole Ise lobster, white Kyoto miso, enoki, gold leaf.", tags: ["Seasonal"] },
+        { name: "Sakura Pork Belly", jp: "さくら豚角煮", price: "¥4,200", desc: "48-hour braised Kurobuta pork belly, mirin, sake, finished with karashi mustard.", tags: [] },
+      ],
+      nigiri: [
+        { name: "Ōtoro", jp: "大トロ", price: "¥2,400", desc: "Bluefin fatty tuna belly, 48-hour aged, cedar-smoked rice.", tags: ["Premium"] },
+        { name: "Kinmedai", jp: "金目鯛", price: "¥1,800", desc: "Splendid alfonsino, lightly torched, sudachi citrus.", tags: ["Seasonal"] },
+        { name: "Bafun Uni", jp: "馬糞雲丹", price: "¥2,800", desc: "Hairy sea urchin from Rishiri Island, nori, shiso.", tags: ["Premium", "Seasonal"] },
+        { name: "Hotate", jp: "帆立", price: "¥1,600", desc: "Hokkaido scallop, yuzu zest, micro shiso.", tags: [] },
+        { name: "Ikura", jp: "いくら", price: "¥1,400", desc: "Sake-cured salmon roe, fresh wasabi, aged Koshihikari rice.", tags: [] },
+        { name: "Anago", jp: "穴子", price: "¥1,800", desc: "Salt-water eel, tsume glaze, toasted sesame.", tags: ["Signature"] },
+      ],
+      small: [
+        { name: "Agedashi Tofu", jp: "揚げ出し豆腐", price: "¥1,200", desc: "Hand-pressed Kyoto tofu, dashi broth, grated daikon, nori.", tags: [] },
+        { name: "Edamame Ceviche", jp: "枝豆セビーチェ", price: "¥1,600", desc: "Our signature East-meets-West starter. Citrus-cured snapper, edamame purée.", tags: ["Signature"] },
+        { name: "Wagyu Gyoza", jp: "和牛餃子", price: "¥2,200", desc: "Pan-fried A5 wagyu dumplings, chilli ponzu, crispy lace.", tags: ["Premium"] },
+        { name: "Dashi Rolls", jp: "出汁ロール", price: "¥1,400", desc: "Warm dashi-soaked spring rolls, crab, mitsuba, black vinegar.", tags: [] },
+        { name: "Miso Black Cod", jp: "銀鱈西京焼き", price: "¥3,200", desc: "Nobu-inspired saikyo miso-marinated black cod, pickled ginger.", tags: ["Signature", "Seasonal"] },
+        { name: "Tempura Platter", jp: "天ぷら盛合せ", price: "¥2,800", desc: "Seasonal selection. Lotus root, shrimp, shiso, eggplant — feather-light batter.", tags: [] },
+      ],
+      desserts: [
+        { name: "Matcha Soufflé", jp: "抹茶スフレ", price: "¥1,800", desc: "Ceremonial grade matcha, white chocolate centre, kinako cream.", tags: ["Signature"] },
+        { name: "Kumo Parfait", jp: "雲パフェ", price: "¥1,600", desc: "Seasonal fruit, yuzu curd, hojicha ice cream, candied ginger, gold leaf.", tags: ["Seasonal"] },
+        { name: "Wagashi Trio", jp: "和菓子三種", price: "¥2,200", desc: "Three seasonal hand-crafted wagashi paired with single-origin gyokuro.", tags: ["Signature"] },
+        { name: "Sesame Ice Cream", jp: "胡麻アイス", price: "¥1,200", desc: "Black sesame soft-serve, mochi, soy caramel, toasted puffed rice.", tags: [] },
+      ],
+    };
+
+    let currentTab = 'omakase';
+    function renderMenu(tab) {
+      const grid = document.getElementById('menuGrid');
+      const items = menuData[tab];
+      grid.innerHTML = items.map(item => `
+        <div class="menu-item">
+          <div class="menu-item-top">
+            <div class="menu-item-name">${item.name}</div>
+            <div class="menu-item-price">${item.price}</div>
+          </div>
+          <div class="menu-item-jp">${item.jp}</div>
+          <div class="menu-item-desc">${item.desc}</div>
+          ${item.tags.length ? `<div class="menu-item-tags">${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
+        </div>
+      `).join('');
+    }
+    function switchTab(el, tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      currentTab = tab;
+      renderMenu(tab);
+    }
+    renderMenu('omakase');
+
+    /* ── PARTICLES ── */
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      p.style.left = Math.random() * 100 + '%';
+      p.style.width = p.style.height = (Math.random() * 2 + 1) + 'px';
+      p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      container.appendChild(p);
+    }
+
+    /* ── NAV SCROLL ── */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    /* ── MOBILE NAV ── */
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('mobileNav').classList.add('open');
+    });
+    document.getElementById('mobileNavClose').addEventListener('click', () => {
+      document.getElementById('mobileNav').classList.remove('open');
+    });
+    function closeMobileNav() {
+      document.getElementById('mobileNav').classList.remove('open');
+    }
+
+    /* ── INTERSECTION OBSERVER ── */
+    const fadeEls = document.querySelectorAll('.fade-up');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    fadeEls.forEach(el => observer.observe(el));
+    // hero visible immediately
+    document.querySelector('#hero .fade-up').classList.add('visible');
+
+    /* ── RESERVATION ── */
+    function handleReservation(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('.form-submit');
+      btn.textContent = 'Reservation Requested ✓';
+      btn.style.background = '#2d4a2d';
+      btn.style.color = '#a8c5a8';
+      setTimeout(() => {
+        btn.textContent = 'Request Reservation';
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
