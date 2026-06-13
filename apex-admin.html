@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>APEX Admin — E-commerce Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #060608;
+  --sidebar: #08080c;
+  --surface: #0e0e14;
+  --surface2: #13131a;
+  --border: #1a1a24;
+  --border2: #222230;
+  --text: #eeeef5;
+  --muted: #52526a;
+  --muted2: #333345;
+  --cyan: #00e5ff;
+  --green: #00ff88;
+  --purple: #9b5de5;
+  --orange: #ff6b35;
+  --red: #ff4757;
+  --cyan-dim: rgba(0,229,255,0.08);
+  --green-dim: rgba(0,255,136,0.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  padding: 0;
+  height: 100vh;
+}
+.sb-logo {
+  padding: 1.5rem 1.25rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.sb-logo-mark {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 800; color: #000;
+  flex-shrink: 0;
+}
+.sb-logo-text { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: -.02em; }
+.sb-logo-text span { color: var(--cyan); }
+
+.sb-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+.sb-section { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted2); padding: .5rem 1.25rem; margin-bottom: .25rem; }
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: .6rem 1.25rem;
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all .15s;
+  border-left: 2px solid transparent;
+  position: relative;
+}
+.sb-item:hover { color: var(--text); background: var(--surface); }
+.sb-item.active { color: var(--cyan); background: var(--cyan-dim); border-left-color: var(--cyan); }
+.sb-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.sb-badge {
+  margin-left: auto; background: var(--cyan); color: #000;
+  font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 99px;
+}
+.sb-badge.red { background: var(--red); color: #fff; }
+
+.sb-user {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.sb-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.sb-user-name { font-size: 13px; font-weight: 600; }
+.sb-user-role { font-size: 11px; color: var(--muted); }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* TOPBAR */
+.topbar {
+  height: 56px; flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 1.5rem;
+  gap: 1rem; background: var(--sidebar);
+}
+.tb-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -.02em; flex: 1; }
+.tb-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border2);
+  padding: 6px 14px; border-radius: 8px; width: 220px;
+}
+.tb-search input {
+  background: transparent; border: none; outline: none;
+  font-size: 13px; color: var(--text); font-family: 'Inter', sans-serif;
+  width: 100%;
+}
+.tb-search input::placeholder { color: var(--muted); }
+.tb-search-icon { color: var(--muted); font-size: 13px; }
+.tb-actions { display: flex; align-items: center; gap: 8px; }
+.tb-btn {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; cursor: pointer; transition: all .15s; position: relative;
+}
+.tb-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+.tb-notif::after {
+  content: ''; position: absolute; top: 6px; right: 6px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--red);
+  border: 1px solid var(--sidebar);
+}
+.tb-period {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface); border: 1px solid var(--border2);
+  padding: 6px 12px; border-radius: 8px;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+}
+.tb-period-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+/* CONTENT */
+.content { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+
+/* METRIC CARDS */
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.metric-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.25rem;
+  position: relative; overflow: hidden; transition: border-color .2s;
+}
+.metric-card:hover { border-color: var(--border2); }
+.metric-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  opacity: 0; transition: opacity .2s;
+}
+.metric-card:hover::before { opacity: 1; }
+.mc-cyan::before { background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
+.mc-green::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+.mc-purple::before { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+.mc-orange::before { background: linear-gradient(90deg, transparent, var(--orange), transparent); }
+
+.mc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+.mc-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.mc-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.mc-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.75rem; font-weight: 700; letter-spacing: -.04em; margin-bottom: .25rem; }
+.mc-change { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+.mc-up { color: var(--green); }
+.mc-down { color: var(--red); }
+.mc-period { color: var(--muted); font-size: 11px; }
+
+/* SPARKLINE */
+.sparkline { display: flex; align-items: flex-end; gap: 2px; height: 32px; margin-top: .75rem; }
+.sp-bar { flex: 1; border-radius: 2px 2px 0 0; opacity: .4; transition: opacity .2s; }
+.sp-bar.peak { opacity: 1; }
+.metric-card:hover .sp-bar { opacity: .6; }
+.metric-card:hover .sp-bar.peak { opacity: 1; }
+
+/* GRID ROW */
+.grid-row { display: grid; grid-template-columns: 1fr 320px; gap: 12px; }
+.grid-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* TABLE */
+.table-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.card-header {
+  padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+.card-action { font-size: 12px; color: var(--cyan); cursor: pointer; font-weight: 500; }
+.card-action:hover { text-decoration: underline; }
+
+.table { width: 100%; }
+.table-head { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr 1fr; padding: .6rem 1.25rem; border-bottom: 1px solid var(--border); }
+.th { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.table-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr 1fr; padding: .75rem 1.25rem; border-bottom: 1px solid var(--border); align-items: center; transition: background .15s; cursor: pointer; }
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: var(--surface2); }
+
+.td { font-size: 13px; color: var(--text); }
+.td-muted { font-size: 12px; color: var(--muted); }
+.order-info { display: flex; flex-direction: column; gap: 2px; }
+.order-id { font-size: 13px; font-weight: 600; color: var(--cyan); }
+.order-name { font-size: 11px; color: var(--muted); }
+
+.status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.status-pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.s-delivered { background: rgba(0,255,136,.08); color: var(--green); }
+.s-delivered::before { background: var(--green); }
+.s-pending { background: rgba(255,107,53,.08); color: var(--orange); }
+.s-pending::before { background: var(--orange); }
+.s-processing { background: rgba(0,229,255,.08); color: var(--cyan); }
+.s-processing::before { background: var(--cyan); }
+.s-cancelled { background: rgba(255,71,87,.08); color: var(--red); }
+.s-cancelled::before { background: var(--red); }
+
+/* SIDE PANEL */
+.side-panel { display: flex; flex-direction: column; gap: 12px; }
+
+/* CHART CARD */
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.chart-body { padding: 1rem 1.25rem; }
+.chart-bars { display: flex; align-items: flex-end; gap: 5px; height: 80px; margin-bottom: .5rem; }
+.ch-bar { flex: 1; border-radius: 3px 3px 0 0; background: linear-gradient(to top, var(--cyan), rgba(0,229,255,.3)); transition: opacity .2s; }
+.ch-bar:hover { opacity: .8; }
+.ch-labels { display: flex; gap: 5px; }
+.ch-label { flex: 1; text-align: center; font-size: 9px; color: var(--muted); }
+
+/* TOP PRODUCTS */
+.products-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; flex: 1; }
+.product-row { display: flex; align-items: center; gap: 10px; padding: .75rem 1.25rem; border-bottom: 1px solid var(--border); transition: background .15s; }
+.product-row:last-child { border-bottom: none; }
+.product-row:hover { background: var(--surface2); }
+.prod-rank { font-size: 11px; font-weight: 700; color: var(--muted2); width: 16px; text-align: center; flex-shrink: 0; }
+.prod-img { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.prod-info { flex: 1; min-width: 0; }
+.prod-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prod-cat { font-size: 10px; color: var(--muted); }
+.prod-rev { font-size: 12px; font-weight: 700; color: var(--green); }
+
+/* BOTTOM ROW */
+.activity-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.activity-list { padding: .5rem 0; }
+.activity-item { display: flex; align-items: flex-start; gap: 10px; padding: .6rem 1.25rem; }
+.act-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.act-content { flex: 1; }
+.act-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+.act-text strong { font-weight: 600; }
+.act-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* DONUT */
+.donut-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.donut-body { padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1.5rem; }
+.donut-svg { flex-shrink: 0; }
+.donut-legend { flex: 1; display: flex; flex-direction: column; gap: .6rem; }
+.legend-item { display: flex; align-items: center; gap: 8px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.legend-label { font-size: 11px; color: var(--muted); flex: 1; }
+.legend-val { font-size: 12px; font-weight: 600; }
+
+/* SCROLLBAR */
+.content::-webkit-scrollbar { width: 4px; }
+.content::-webkit-scrollbar-track { background: transparent; }
+.content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">A</div>
+    <div class="sb-logo-text">APE<span>X</span></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Main</div>
+    <div class="sb-item active"><span class="sb-icon">◈</span> Dashboard</div>
+    <div class="sb-item"><span class="sb-icon">◻</span> Orders <span class="sb-badge red">12</span></div>
+    <div class="sb-item"><span class="sb-icon">◈</span> Products</div>
+    <div class="sb-item"><span class="sb-icon">◻</span> Customers</div>
+    <div class="sb-item"><span class="sb-icon">◈</span> Analytics</div>
+
+    <div class="sb-section" style="margin-top:.75rem">Store</div>
+    <div class="sb-item"><span class="sb-icon">◻</span> Inventory</div>
+    <div class="sb-item"><span class="sb-icon">◈</span> Reviews <span class="sb-badge">4</span></div>
+    <div class="sb-item"><span class="sb-icon">◻</span> Discounts</div>
+    <div class="sb-item"><span class="sb-icon">◈</span> Marketing</div>
+
+    <div class="sb-section" style="margin-top:.75rem">Settings</div>
+    <div class="sb-item"><span class="sb-icon">◻</span> Integrations</div>
+    <div class="sb-item"><span class="sb-icon">◈</span> Settings</div>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">M</div>
+    <div>
+      <div class="sb-user-name">Mert Şafak</div>
+      <div class="sb-user-role">Store Admin</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-title">Dashboard</div>
+    <div class="tb-search">
+      <span class="tb-search-icon">⌕</span>
+      <input type="text" placeholder="Search orders, products..."/>
+    </div>
+    <div class="tb-actions">
+      <div class="tb-period"><div class="tb-period-dot"></div> Last 30 days ▾</div>
+      <div class="tb-btn tb-notif">🔔</div>
+      <div class="tb-btn">⚙</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- METRICS -->
+    <div class="metrics">
+      <div class="metric-card mc-cyan">
+        <div class="mc-header">
+          <div class="mc-label">Total Revenue</div>
+          <div class="mc-icon" style="background:var(--cyan-dim);color:var(--cyan)">$</div>
+        </div>
+        <div class="mc-val" style="color:var(--cyan)">$284,920</div>
+        <div class="mc-change"><span class="mc-up">↑ 23.4%</span><span class="mc-period">vs last month</span></div>
+        <div class="sparkline">
+          <div class="sp-bar" style="height:35%;background:var(--cyan)"></div>
+          <div class="sp-bar" style="height:52%;background:var(--cyan)"></div>
+          <div class="sp-bar" style="height:44%;background:var(--cyan)"></div>
+          <div class="sp-bar" style="height:68%;background:var(--cyan)"></div>
+          <div class="sp-bar" style="height:55%;background:var(--cyan)"></div>
+          <div class="sp-bar" style="height:72%;background:var(--cyan)"></div>
+          <div class="sp-bar peak" style="height:88%;background:var(--cyan)"></div>
+          <div class="sp-bar peak" style="height:100%;background:var(--cyan)"></div>
+        </div>
+      </div>
+      <div class="metric-card mc-green">
+        <div class="mc-header">
+          <div class="mc-label">Total Orders</div>
+          <div class="mc-icon" style="background:var(--green-dim);color:var(--green)">📦</div>
+        </div>
+        <div class="mc-val" style="color:var(--green)">4,821</div>
+        <div class="mc-change"><span class="mc-up">↑ 12.1%</span><span class="mc-period">vs last month</span></div>
+        <div class="sparkline">
+          <div class="sp-bar" style="height:45%;background:var(--green)"></div>
+          <div class="sp-bar" style="height:60%;background:var(--green)"></div>
+          <div class="sp-bar" style="height:40%;background:var(--green)"></div>
+          <div class="sp-bar" style="height:75%;background:var(--green)"></div>
+          <div class="sp-bar" style="height:58%;background:var(--green)"></div>
+          <div class="sp-bar" style="height:80%;background:var(--green)"></div>
+          <div class="sp-bar peak" style="height:92%;background:var(--green)"></div>
+          <div class="sp-bar peak" style="height:100%;background:var(--green)"></div>
+        </div>
+      </div>
+      <div class="metric-card mc-purple">
+        <div class="mc-header">
+          <div class="mc-label">Avg Order Value</div>
+          <div class="mc-icon" style="background:rgba(155,93,229,.1);color:var(--purple)">◈</div>
+        </div>
+        <div class="mc-val" style="color:var(--purple)">$58.80</div>
+        <div class="mc-change"><span class="mc-up">↑ 5.2%</span><span class="mc-period">vs last month</span></div>
+        <div class="sparkline">
+          <div class="sp-bar" style="height:55%;background:var(--purple)"></div>
+          <div class="sp-bar" style="height:48%;background:var(--purple)"></div>
+          <div class="sp-bar" style="height:62%;background:var(--purple)"></div>
+          <div class="sp-bar" style="height:70%;background:var(--purple)"></div>
+          <div class="sp-bar" style="height:65%;background:var(--purple)"></div>
+          <div class="sp-bar peak" style="height:85%;background:var(--purple)"></div>
+          <div class="sp-bar" style="height:78%;background:var(--purple)"></div>
+          <div class="sp-bar peak" style="height:100%;background:var(--purple)"></div>
+        </div>
+      </div>
+      <div class="metric-card mc-orange">
+        <div class="mc-header">
+          <div class="mc-label">Return Rate</div>
+          <div class="mc-icon" style="background:rgba(255,107,53,.1);color:var(--orange)">↩</div>
+        </div>
+        <div class="mc-val" style="color:var(--orange)">3.2%</div>
+        <div class="mc-change"><span class="mc-down">↓ 0.8%</span><span class="mc-period">vs last month</span></div>
+        <div class="sparkline">
+          <div class="sp-bar" style="height:80%;background:var(--orange)"></div>
+          <div class="sp-bar" style="height:72%;background:var(--orange)"></div>
+          <div class="sp-bar" style="height:65%;background:var(--orange)"></div>
+          <div class="sp-bar" style="height:58%;background:var(--orange)"></div>
+          <div class="sp-bar" style="height:50%;background:var(--orange)"></div>
+          <div class="sp-bar" style="height:44%;background:var(--orange)"></div>
+          <div class="sp-bar" style="height:38%;background:var(--orange)"></div>
+          <div class="sp-bar peak" style="height:32%;background:var(--orange)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid-row">
+
+      <!-- ORDERS TABLE -->
+      <div class="table-card">
+        <div class="card-header">
+          <div class="card-title">Recent Orders</div>
+          <div class="card-action">View all →</div>
+        </div>
+        <div class="table">
+          <div class="table-head">
+            <div class="th">Order</div>
+            <div class="th">Customer</div>
+            <div class="th">Amount</div>
+            <div class="th">Status</div>
+            <div class="th">Date</div>
+          </div>
+          <div class="table-row">
+            <div class="order-info"><div class="order-id">#ORD-4821</div><div class="order-name">Nike Air Max 90 · 2 items</div></div>
+            <div class="td">Sarah M.</div>
+            <div class="td" style="font-weight:600">$189.00</div>
+            <div class="td"><span class="status-pill s-delivered">Delivered</span></div>
+            <div class="td-muted">Jun 13</div>
+          </div>
+          <div class="table-row">
+            <div class="order-info"><div class="order-id">#ORD-4820</div><div class="order-name">Adidas Ultraboost · 1 item</div></div>
+            <div class="td">James K.</div>
+            <div class="td" style="font-weight:600">$240.00</div>
+            <div class="td"><span class="status-pill s-processing">Processing</span></div>
+            <div class="td-muted">Jun 13</div>
+          </div>
+          <div class="table-row">
+            <div class="order-info"><div class="order-id">#ORD-4819</div><div class="order-name">New Balance 550 · 1 item</div></div>
+            <div class="td">Emma L.</div>
+            <div class="td" style="font-weight:600">$120.00</div>
+            <div class="td"><span class="status-pill s-pending">Pending</span></div>
+            <div class="td-muted">Jun 12</div>
+          </div>
+          <div class="table-row">
+            <div class="order-info"><div class="order-id">#ORD-4818</div><div class="order-name">Jordan 1 Retro · 1 item</div></div>
+            <div class="td">Alex P.</div>
+            <div class="td" style="font-weight:600">$180.00</div>
+            <div class="td"><span class="status-pill s-delivered">Delivered</span></div>
+            <div class="td-muted">Jun 12</div>
+          </div>
+          <div class="table-row">
+            <div class="order-info"><div class="order-id">#ORD-4817</div><div class="order-name">Converse Chuck 70 · 2 items</div></div>
+            <div class="td">Mia R.</div>
+            <div class="td" style="font-weight:600">$160.00</div>
+            <div class="td"><span class="status-pill s-cancelled">Cancelled</span></div>
+            <div class="td-muted">Jun 11</div>
+          </div>
+          <div class="table-row">
+            <div class="order-info"><div class="order-id">#ORD-4816</div><div class="order-name">Vans Old Skool · 1 item</div></div>
+            <div class="td">Tom B.</div>
+            <div class="td" style="font-weight:600">$75.00</div>
+            <div class="td"><span class="status-pill s-delivered">Delivered</span></div>
+            <div class="td-muted">Jun 11</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIDE PANEL -->
+      <div class="side-panel">
+
+        <!-- REVENUE CHART -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div class="card-title">Revenue</div>
+            <div class="card-action">Monthly ▾</div>
+          </div>
+          <div class="chart-body">
+            <div class="chart-bars">
+              <div class="ch-bar" style="height:40%"></div>
+              <div class="ch-bar" style="height:58%"></div>
+              <div class="ch-bar" style="height:45%"></div>
+              <div class="ch-bar" style="height:72%"></div>
+              <div class="ch-bar" style="height:60%"></div>
+              <div class="ch-bar" style="height:85%"></div>
+              <div class="ch-bar" style="height:70%"></div>
+              <div class="ch-bar" style="height:100%;box-shadow:0 0 12px rgba(0,229,255,.3)"></div>
+            </div>
+            <div class="ch-labels">
+              <div class="ch-label">Nov</div>
+              <div class="ch-label">Dec</div>
+              <div class="ch-label">Jan</div>
+              <div class="ch-label">Feb</div>
+              <div class="ch-label">Mar</div>
+              <div class="ch-label">Apr</div>
+              <div class="ch-label">May</div>
+              <div class="ch-label">Jun</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TOP PRODUCTS -->
+        <div class="products-card">
+          <div class="card-header">
+            <div class="card-title">Top Products</div>
+            <div class="card-action">View all →</div>
+          </div>
+          <div class="product-row">
+            <div class="prod-rank">#1</div>
+            <div class="prod-img" style="background:rgba(0,229,255,.08)">👟</div>
+            <div class="prod-info"><div class="prod-name">Nike Air Max 90</div><div class="prod-cat">Sneakers</div></div>
+            <div class="prod-rev">$42.1k</div>
+          </div>
+          <div class="product-row">
+            <div class="prod-rank">#2</div>
+            <div class="prod-img" style="background:rgba(0,255,136,.08)">👕</div>
+            <div class="prod-info"><div class="prod-name">Adidas Ultraboost</div><div class="prod-cat">Running</div></div>
+            <div class="prod-rev">$38.5k</div>
+          </div>
+          <div class="product-row">
+            <div class="prod-rank">#3</div>
+            <div class="prod-img" style="background:rgba(155,93,229,.08)">🧢</div>
+            <div class="prod-info"><div class="prod-name">Jordan 1 Retro</div><div class="prod-cat">Basketball</div></div>
+            <div class="prod-rev">$31.2k</div>
+          </div>
+          <div class="product-row">
+            <div class="prod-rank">#4</div>
+            <div class="prod-img" style="background:rgba(255,107,53,.08)">👖</div>
+            <div class="prod-info"><div class="prod-name">New Balance 550</div><div class="prod-cat">Lifestyle</div></div>
+            <div class="prod-rev">$24.8k</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="grid-row2">
+
+      <!-- ACTIVITY -->
+      <div class="activity-card">
+        <div class="card-header">
+          <div class="card-title">Recent Activity</div>
+          <div class="card-action">View all →</div>
+        </div>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="act-dot" style="background:var(--green)"></div>
+            <div class="act-content">
+              <div class="act-text"><strong>New order #4821</strong> received from Sarah M. — $189.00</div>
+              <div class="act-time">2 minutes ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot" style="background:var(--cyan)"></div>
+            <div class="act-content">
+              <div class="act-text"><strong>Payment confirmed</strong> for order #4820 — Adidas Ultraboost</div>
+              <div class="act-time">14 minutes ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot" style="background:var(--orange)"></div>
+            <div class="act-content">
+              <div class="act-text"><strong>Low stock alert</strong> — Nike Air Max 90 (White/Black) · 3 left</div>
+              <div class="act-time">1 hour ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot" style="background:var(--red)"></div>
+            <div class="act-content">
+              <div class="act-text"><strong>Order #4817 cancelled</strong> by Mia R. — refund initiated</div>
+              <div class="act-time">3 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot" style="background:var(--purple)"></div>
+            <div class="act-content">
+              <div class="act-text"><strong>New review</strong> ★★★★★ on Jordan 1 Retro from Alex P.</div>
+              <div class="act-time">5 hours ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DONUT CHART -->
+      <div class="donut-card">
+        <div class="card-header">
+          <div class="card-title">Sales by Category</div>
+          <div class="card-action">This month</div>
+        </div>
+        <div class="donut-body">
+          <svg class="donut-svg" width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#1a1a24" stroke-width="18"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#00e5ff" stroke-width="18"
+              stroke-dasharray="100.5 150.8" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#00ff88" stroke-width="18"
+              stroke-dasharray="60.3 150.8" stroke-dashoffset="-100.5" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#9b5de5" stroke-width="18"
+              stroke-dasharray="45.2 150.8" stroke-dashoffset="-160.8" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#ff6b35" stroke-width="18"
+              stroke-dasharray="45.8 150.8" stroke-dashoffset="-206" transform="rotate(-90 55 55)"/>
+            <text x="55" y="51" text-anchor="middle" fill="#eeeef5" font-size="13" font-weight="700" font-family="Space Grotesk">$284k</text>
+            <text x="55" y="64" text-anchor="middle" fill="#52526a" font-size="8" font-family="Inter">Total</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--cyan)"></div>
+              <div class="legend-label">Sneakers</div>
+              <div class="legend-val">40%</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--green)"></div>
+              <div class="legend-label">Running</div>
+              <div class="legend-val">24%</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--purple)"></div>
+              <div class="legend-label">Basketball</div>
+              <div class="legend-val">18%</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--orange)"></div>
+              <div class="legend-label">Lifestyle</div>
+              <div class="legend-val">18%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+</body>
+</html>
